@@ -1,6 +1,37 @@
 <!DOCTYPE html>
 <html lang="bg">
 <head>
+    <!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order App</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF8C00"> <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        // Регистрация на Service Worker за офлайн работа
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('PWA: Service Worker е готов!'))
+                    .catch(err => console.log('PWA: Грешка при регистрация:', err));
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Моите Поръчки</h1>
+    <div id="app">
+        </div>
+</body>
+</html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>АВТОЗОНА 33 - v16</title>
@@ -556,4 +587,5 @@
 </script>
 
 </body>
+
 </html>
