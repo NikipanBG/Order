@@ -14,12 +14,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script>
-        // Регистрация на Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('PWA: Готово!'))
-                    .catch(err => console.log('PWA: Грешка:', err));
+                    .then(reg => console.log('PWA Ready'))
+                    .catch(err => console.log('PWA Error', err));
             });
         }
     </script>
@@ -28,58 +27,36 @@
         :root { --p: #1a365d; --s: #2b6cb0; --ok: #48bb78; --err: #c53030; --bg: #f7fafc; --card: #ffffff; --border: #e2e8f0; --viber: #7360f2; --warn: #ed8936; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); padding-bottom: 100px; min-height: 100vh; }
-        
         #loginOverlay { position: fixed; inset: 0; background: var(--p); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; }
         .login-box input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid var(--border); border-radius: 10px; font-size: 1.2rem; text-align: center; outline: none; }
         .login-box button { background: var(--s); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
-
         .header { background: linear-gradient(135deg, var(--p), var(--s)); color: white; padding: 15px; position: sticky; top: 0; z-index: 100; text-align: center; }
         .controls { background: var(--card); padding: 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
         .search-row { display: flex; gap: 8px; align-items: center; position: relative; }
         #searchInput { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--s); outline: none; font-size: 16px; }
-        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 99; display: none; }
         .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border); }
-        .autocomplete-item:hover { background: #ebf8ff; }
         .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        select { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 0.85rem; }
-        .btn-tool { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 1.1rem; min-width: 44px; }
-        .btn-tool.active { background: var(--ok); color: white; border-color: var(--ok); }
-
+        select { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; }
+        .btn-tool { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 1.1rem; }
+        .btn-tool.active { background: var(--ok); color: white; }
         .product-card { background: var(--card); margin: 8px; padding: 12px; border-radius: 10px; border: 1px solid var(--border); position: relative; }
         .product-card.low-stock { border-left: 4px solid var(--warn); }
-        .checkbox-select { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; cursor: pointer; }
-        .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-left: 30px; }
+        .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .p-code { font-weight: bold; background: #ebf8ff; color: #2c5282; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; }
         .order-controls { display: flex; align-items: center; gap: 5px; background: #edf2f7; padding: 4px; border-radius: 20px; }
-        .btn-qty { background: var(--s); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .btn-qty:disabled { background: #cbd5e0 !important; cursor: not-allowed; opacity: 0.5; }
-        .qty-input { width: 50px; border: none; background: transparent; text-align: center; font-weight: bold; font-size: 1.1rem; }
-
-        .bulk-actions { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--p); color: white; padding: 10px; display: none; justify-content: center; gap: 10px; z-index: 150; }
-        .bulk-actions.show { display: flex; }
-
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p); color: white; padding: 18px; z-index: 200; text-align: center; font-weight: bold; cursor: pointer; }
+        .btn-qty { background: var(--s); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; }
+        .qty-input { width: 50px; border: none; background: transparent; text-align: center; font-weight: bold; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p); color: white; padding: 18px; z-index: 200; text-align: center; cursor: pointer; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 300; padding: 15px; }
-        .modal-content { background: white; border-radius: 15px; max-height: 95vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .modal-item { border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .remove-item { color: var(--err); cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
-        .action-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; color: white; cursor: pointer; font-size: 1rem; }
-
-        #uploadZone { text-align:center; padding:50px; border:2px dashed #ccc; margin:20px; border-radius:20px; background:white; cursor:pointer; }
-        
-        .sync-status { position: fixed; top: 70px; right: 10px; background: var(--ok); color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; display: none; z-index: 90; }
+        .modal-content { background: white; border-radius: 15px; max-height: 95vh; overflow-y: auto; padding: 20px; }
+        .action-btn { width: 100%; padding: 14px; margin-top: 10px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
+        .sync-status { position: fixed; top: 70px; right: 10px; background: var(--ok); color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; display: none; }
         .sync-status.show { display: block; }
-
-        .fab-history { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background: var(--p); color: white; border: none; border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 180; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-        .history-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400; padding: 20px; overflow-y: auto; }
-        .history-item { background: white; margin: 10px 0; padding: 15px; border-radius: 10px; }
-        .history-date { font-weight: bold; color: var(--p); margin-bottom: 5px; }
-
-        @media print {
-            .header, .controls, .cart-bar, #actionButtons, .order-controls, #loginOverlay, .btn-tool, #searchInput, #list, #uploadZone, .bulk-actions, .checkbox-select, .fab-history, .sync-status { display: none !important; }
-            .modal { position: relative !important; display: block !important; background: white !important; inset: auto !important; padding: 0 !important; }
-        }
+        .fab-history { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background: var(--p); color: white; border: none; border-radius: 50%; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .history-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400; padding: 20px; }
+        @media print { .header, .controls, .cart-bar, #actionButtons, .fab-history, #loginOverlay { display: none !important; } .modal { display: block !important; position: relative !important; } }
     </style>
 </head>
 <body>
@@ -88,7 +65,7 @@
     <div class="login-box">
         <h2 style="color: var(--p)">АВТОЗОНА 33</h2>
         <input type="password" id="passInput" placeholder="Код за достъп">
-        <button id="loginBtn">ВЛИЗАНЕ</button>
+        <button onclick="checkPass()">ВЛИЗАНЕ</button>
     </div>
 </div>
 
@@ -100,28 +77,28 @@
 
     <div class="sync-status" id="syncStatus">✓ Синхронизирано</div>
 
-    <div id="uploadZone" style="display:none;">
+    <div id="uploadZone" style="display:none; text-align:center; padding:50px; border:2px dashed #ccc; margin:20px; background:white; border-radius:20px; cursor:pointer;">
         <p>📁 ЗАРЕДЕТЕ EXCEL ФАЙЛ</p>
-        <input type="file" id="fileIn" hidden>
+        <input type="file" id="fileIn" hidden onchange="handleFile(event)">
     </div>
 
     <div class="controls">
         <div class="search-row">
-            <input type="search" id="searchInput" placeholder="Търсене..." autocomplete="off">
+            <input type="search" id="searchInput" placeholder="Търсене..." autocomplete="off" oninput="handleSearch()">
             <div class="autocomplete-list" id="autocompleteList"></div>
-            <button class="btn-tool" id="stockBtn">📦</button>
-            <button class="btn-tool" id="resetBtn">✕</button>
+            <button class="btn-tool" id="stockBtn" onclick="toggleStock()">📦</button>
+            <button class="btn-tool" onclick="resetAll()">✕</button>
         </div>
         <div class="filter-row">
-            <select id="sgFilter"><option value="">Група (Всички)</option></select>
-            <select id="brFilter"><option value="">Марка (Всички)</option></select>
+            <select id="sgFilter" onchange="updateF(); handleSearch()"><option value="">Група (Всички)</option></select>
+            <select id="brFilter" onchange="handleSearch()"><option value="">Марка (Всички)</option></select>
         </div>
     </div>
 
     <div id="list"></div>
 
-    <div class="cart-bar" id="cartBar" style="display:none;">
-        📋 ПРЕГЛЕД ЗАЯВКА (<span id="cartCount">0</span>)
+    <div class="cart-bar" id="cartBar" style="display:none;" onclick="openCart()">
+        📋 ПРЕГЛЕД ЗАЯВКА (<span id="cartCount">0</span> бр.)
     </div>
 
     <button class="fab-history" onclick="showHistory()">📜</button>
@@ -130,32 +107,189 @@
         <div class="modal-content">
             <h3>ЗАЯВКА - АВТОЗОНА 33</h3>
             <div id="modalItems"></div>
-            <div id="summaryBox" style="border-top:1px solid #ccc; padding:10px;">
+            <div style="border-top:2px solid #eee; margin-top:15px; padding-top:10px;">
                 <p>Позиции: <span id="sPos">0</span></p>
                 <p>Общо: <span id="sTot">0</span> бр.</p>
-                <textarea id="orderComment" placeholder="Бележка..." style="width:100%; margin-top:10px;"></textarea>
+                <textarea id="orderComment" placeholder="Бележка..." style="width:100%; padding:10px; margin-top:10px;"></textarea>
             </div>
             <div id="actionButtons">
-                <button class="action-btn" style="background:var(--ok);" onclick="window.print()">🖨️ ПЕЧАТ</button>
-                <button class="action-btn" style="background:var(--viber);" id="viberBtn">💬 VIBER</button>
-                <button class="action-btn" style="background:var(--err);" id="clearCartBtn">🗑️ ИЗЧИСТИ</button>
-                <button onclick="document.getElementById('cartModal').style.display='none'">Назад</button>
+                <button class="action-btn" style="background:#2d3748;" onclick="window.print()">🖨️ ПЕЧАТ</button>
+                <button class="action-btn" style="background:var(--viber);" onclick="copyViber()">💬 VIBER</button>
+                <button class="action-btn" style="background:var(--err);" onclick="clearCart()">🗑️ ИЗЧИСТИ</button>
+                <button class="action-btn" style="background:gray;" onclick="document.getElementById('cartModal').style.display='none'">Назад</button>
             </div>
         </div>
     </div>
 
     <div class="history-modal" id="historyModal">
-        <div style="background:white; padding:20px; border-radius:15px; max-width:500px; margin:auto;">
+        <div style="background:white; padding:20px; border-radius:15px; max-width:500px; margin:auto; max-height:80vh; overflow-y:auto;">
             <h3>История</h3>
             <div id="historyList"></div>
-            <button onclick="closeHistory()">Затвори</button>
+            <button class="action-btn" style="background:var(--p);" onclick="closeHistory()">Затвори</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ТУК ЗАЛЕПИ ВСИЧКИЯ ОСТАНАЛ JAVASCRIPT, КОЙТО ИМАШЕ (db, cart, handleSearch и т.н.)
-    // Копирай го от твоя оригинален файл от "let db = [];" до края на "</script>"
+    let db = [];
+    let cart = new Map();
+    let stockOnly = false;
+    const MASTER_PASS = "AZ33";
+
+    window.onload = () => {
+        if (sessionStorage.getItem('az_auth') === 'true') {
+            showApp();
+        }
+    };
+
+    function checkPass() {
+        if(document.getElementById('passInput').value.toUpperCase() === MASTER_PASS) {
+            sessionStorage.setItem('az_auth', 'true');
+            showApp();
+        } else { alert("Грешен код!"); }
+    }
+
+    function showApp() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        loadData();
+        loadCart();
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('az_db_v15_1');
+        if(saved) {
+            db = JSON.parse(saved);
+            initF(); handleSearch();
+        } else { document.getElementById('uploadZone').style.display = 'block'; }
+    }
+
+    function handleFile(e) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
+            processExcel(rows);
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    }
+
+    function processExcel(rows) {
+        let hIdx = rows.findIndex(r => r && r.some(c => String(c).toLowerCase().includes('стока')));
+        const h = rows[hIdx || 0].map(c => String(c || '').toLowerCase().trim());
+        const find = (keys) => h.findIndex(x => keys.some(y => x.includes(y)));
+
+        db = rows.slice((hIdx || 0) + 1).filter(r => r[find(['стока'])]).map((r, i) => {
+            const g = String(r[find(['група'])] || '').split('/');
+            return {
+                id: 'az' + i,
+                c: String(r[find(['код'])] || ''),
+                n: String(r[find(['стока'])] || ''),
+                sg: g[1] || 'Общи',
+                br: g[2] || 'Други',
+                w: Math.max(0, parseFloat(String(r[find(['склад'])] || 0).replace(',','.')) || 0)
+            };
+        });
+        localStorage.setItem('az_db_v15_1', JSON.stringify(db));
+        location.reload();
+    }
+
+    function render(data) {
+        const container = document.getElementById('list');
+        container.innerHTML = data.map(i => {
+            const q = cart.get(i.id) || 0;
+            return `
+            <div class="product-card ${i.w <= 5 && i.w > 0 ? 'low-stock' : ''}">
+                <div class="p-header">
+                    <span class="p-code">${i.c}</span>
+                    <div class="order-controls">
+                        <button class="btn-qty" onclick="setQty('${i.id}', ${q - 1})">−</button>
+                        <input type="number" class="qty-input" value="${q}" onchange="setQty('${i.id}', this.value)">
+                        <button class="btn-qty" onclick="setQty('${i.id}', ${q + 1})">+</button>
+                    </div>
+                </div>
+                <div style="font-weight:bold; color:var(--p)">${i.n}</div>
+                <div style="font-size:0.75rem; color:gray; margin-top:4px;">Налично: ${i.w} бр.</div>
+            </div>`;
+        }).join('');
+    }
+
+    function setQty(id, val) {
+        const item = db.find(it => it.id === id);
+        let v = parseInt(val) || 0;
+        if (v < 0) v = 0;
+        if (v > item.w) v = Math.floor(item.w);
+        
+        if (v === 0) cart.delete(id); else cart.set(id, v);
+        saveCart();
+        updateCartBar();
+        handleSearch();
+    }
+
+    function updateCartBar() {
+        let t = 0; cart.forEach(v => t += v);
+        document.getElementById('cartBar').style.display = t > 0 ? 'block' : 'none';
+        document.getElementById('cartCount').innerText = t;
+    }
+
+    function saveCart() { localStorage.setItem('az_cart', JSON.stringify([...cart])); }
+    function loadCart() { const saved = localStorage.getItem('az_cart'); if(saved) { cart = new Map(JSON.parse(saved)); updateCartBar(); } }
+
+    function handleSearch() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const sg = document.getElementById('sgFilter').value;
+        const br = document.getElementById('brFilter').value;
+        let fil = db.filter(i => (!sg || i.sg === sg) && (!br || i.br === br) && (i.n.toLowerCase().includes(q) || i.c.toLowerCase().includes(q)));
+        if(stockOnly) fil = fil.filter(i => i.w > 0);
+        render(fil);
+    }
+
+    function initF() {
+        const sgs = [...new Set(db.map(i => i.sg))].sort();
+        document.getElementById('sgFilter').innerHTML = '<option value="">Група (Всички)</option>' + sgs.map(g => `<option value="${g}">${g}</option>`).join('');
+        updateF();
+    }
+
+    function updateF() {
+        const sel = document.getElementById('sgFilter').value;
+        const brs = [...new Set(db.filter(i => !sel || i.sg === sel).map(i => i.br))].sort();
+        document.getElementById('brFilter').innerHTML = '<option value="">Марка (Всички)</option>' + brs.map(b => `<option value="${b}">${b}</option>`).join('');
+    }
+
+    function toggleStock() { stockOnly = !stockOnly; document.getElementById('stockBtn').classList.toggle('active'); handleSearch(); }
+    function resetAll() { document.getElementById('searchInput').value=''; document.getElementById('sgFilter').value=''; stockOnly=false; handleSearch(); }
+
+    function openCart() {
+        const cont = document.getElementById('modalItems');
+        let html = ''; let tQ = 0; let pos = 0;
+        cart.forEach((q, id) => {
+            const i = db.find(it => it.id === id);
+            html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee;">
+                <div><b>${i.n}</b><br><small>${i.c}</small></div>
+                <b>${q} бр.</b>
+            </div>`;
+            tQ += q; pos++;
+        });
+        cont.innerHTML = html;
+        document.getElementById('sPos').innerText = pos;
+        document.getElementById('sTot').innerText = tQ;
+        document.getElementById('cartModal').style.display = 'block';
+    }
+
+    function clearCart() { if(confirm("Изчистване?")) { cart.clear(); saveCart(); updateCartBar(); document.getElementById('cartModal').style.display='none'; handleSearch(); } }
+    function clearData() { if(confirm("Изчистване на базата?")) { localStorage.removeItem('az_db_v15_1'); location.reload(); } }
+
+    function copyViber() {
+        let txt = "ЗАЯВКА АВТОЗОНА 33:\n";
+        cart.forEach((q, id) => { const i = db.find(it => it.id === id); txt += `• ${i.n} [${i.c}] - ${q}бр.\n`; });
+        navigator.clipboard.writeText(txt).then(() => {
+            alert("Копирано! Постави го във Viber.");
+            window.location.href = "viber://forward";
+        });
+    }
+
+    function showHistory() { document.getElementById('historyModal').style.display = 'block'; }
+    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
 </script>
 
 </body>
