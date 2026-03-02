@@ -1,1 +1,5 @@
-
+{
+"action": "image_generation",
+"action_input": "{ "prompt": "A clean, modern app icon for a mobile application named 'Order'. The design features a stylized white shopping bag or a clipboard checklist icon in the center. The background is a vibrant solid orange circle with soft shadows. Flat design, minimalist, professional, high quality, 1024x1024 resolution, centered on a white background." }",
+"thought": "Генерирам оранжев вариант на иконата."
+}
