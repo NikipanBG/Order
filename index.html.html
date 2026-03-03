@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>АВТОЗОНА 33 - v16</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi0JDQktCq0J7QodCc0JAgMzMiLCJzaG9ydF9uYW1lIjoi0JDQktCq0J7QodCc0JAgMzMiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y3ZmFmYyIsInRoZW1lX2NvbG9yIjoiIzFhMzY1ZCJ9">
+    <style>
+        :root { --p: #1a365d; --s: #2b6cb0; --ok: #48bb78; --err: #c53030; --bg: #f7fafc; --card: #ffffff; --border: #e2e8f0; --viber: #7360f2; --warn: #ed8936; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); padding-bottom: 100px; min-height: 100vh; }
+        
+        #loginOverlay { position: fixed; inset: 0; background: var(--p); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid var(--border); border-radius: 10px; font-size: 1.2rem; text-align: center; outline: none; }
+        .login-box button { background: var(--s); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
+
+        .header { background: linear-gradient(135deg, var(--p), var(--s)); color: white; padding: 15px; position: sticky; top: 0; z-index: 100; text-align: center; }
+        .controls { background: var(--card); padding: 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+        .search-row { display: flex; gap: 8px; align-items: center; position: relative; }
+        #searchInput { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--s); outline: none; font-size: 16px; }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+        .autocomplete-item { padding: 10px; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .autocomplete-item:hover { background: #ebf8ff; }
+        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        select { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 0.85rem; }
+        .btn-tool { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 1.1rem; min-width: 44px; }
+        .btn-tool.active { background: var(--ok); color: white; border-color: var(--ok); }
+
+        .product-card { background: var(--card); margin: 8px; padding: 12px; border-radius: 10px; border: 1px solid var(--border); position: relative; }
+        .product-card.low-stock { border-left: 4px solid var(--warn); }
+        .checkbox-select { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; cursor: pointer; }
+        .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-left: 30px; }
+        .p-code { font-weight: bold; background: #ebf8ff; color: #2c5282; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; }
+        .order-controls { display: flex; align-items: center; gap: 5px; background: #edf2f7; padding: 4px; border-radius: 20px; }
+        .btn-qty { background: var(--s); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-qty:disabled { background: #cbd5e0 !important; cursor: not-allowed; opacity: 0.5; }
+        .qty-input { width: 50px; border: none; background: transparent; text-align: center; font-weight: bold; font-size: 1.1rem; }
+
+        .bulk-actions { position: fixed; bottom: 70px; left: 0; right: 0; background: var(--p); color: white; padding: 10px; display: none; justify-content: center; gap: 10px; z-index: 150; }
+        .bulk-actions.show { display: flex; }
+
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p); color: white; padding: 18px; z-index: 200; text-align: center; font-weight: bold; cursor: pointer; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 300; padding: 15px; }
+        .modal-content { background: white; border-radius: 15px; max-height: 95vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .modal-item { border-bottom: 1px solid var(--border); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .remove-item { color: var(--err); cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
+        .action-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; color: white; cursor: pointer; font-size: 1rem; }
+
+        #uploadZone { text-align:center; padding:50px; border:2px dashed #ccc; margin:20px; border-radius:20px; background:white; cursor:pointer; }
+        
+        .sync-status { position: fixed; top: 70px; right: 10px; background: var(--ok); color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; display: none; z-index: 90; }
+        .sync-status.show { display: block; }
+
+        /* Плаващ бутон за история - долу дясно */
+        .fab-history { 
+            position: fixed; 
+            bottom: 80px; 
+            right: 20px; 
+            width: 56px; 
+            height: 56px; 
+            background: var(--p); 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            z-index: 180; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fab-history:active { transform: scale(0.95); }
+
+        .history-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400; padding: 20px; overflow-y: auto; }
+        .history-item { background: white; margin: 10px 0; padding: 15px; border-radius: 10px; }
+        .history-date { font-weight: bold; color: var(--p); margin-bottom: 5px; }
+
+        @media print {
+            @page { margin: 1cm; size: auto; }
+            html, body { height: auto !important; overflow: visible !important; background: white !important; }
+            .header, .controls, .cart-bar, #actionButtons, .order-controls, #loginOverlay, .btn-tool, #searchInput, #list, #uploadZone, .bulk-actions, .checkbox-select, .fab-history, .sync-status { display: none !important; }
+            .modal { position: relative !important; display: block !important; background: white !important; inset: auto !important; padding: 0 !important; overflow: visible !important; }
+            .modal-content { display: block !important; border: none !important; width: 100% !important; max-height: none !important; padding: 0 !important; overflow: visible !important; box-shadow: none !important; }
+            h3 { text-align: center; border-bottom: 2px solid black !important; margin-bottom: 20px; padding-bottom: 10px; }
+            .modal-item { border-bottom: 1px solid black !important; display: flex !important; justify-content: space-between !important; padding: 10px 0 !important; page-break-inside: avoid !important; }
+            .summary-box { border: 2px solid black !important; background: none !important; margin-top: 20px !important; padding: 15px !important; page-break-inside: avoid !important; }
+            textarea { border: none !important; resize: none !important; overflow: hidden !important; width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2 style="color: var(--p)">АВТОЗОНА 33</h2>
+        <input type="password" id="passInput" placeholder="Код за достъп">
+        <button id="loginBtn">ВЛИЗАНЕ</button>
+    </div>
+</div>
+
+<div id="mainApp" style="display: none;">
+    <div class="header" id="appHeader">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
+            <div style="width:60px"></div>
+            <h1>АВТОЗОНА 33</h1>
+            <button onclick="clearData()" style="background:none; border:1px solid white; color:white; padding:4px 8px; border-radius:5px; font-size:0.65rem; cursor:pointer;">ОБНОВИ</button>
+        </div>
+    </div>
+
+    <div class="sync-status" id="syncStatus">✓ Синхронизирано</div>
+
+    <div id="uploadZone" style="display:none;">
+        <p>📁 ЗАРЕДЕТЕ EXCEL ФАЙЛ</p>
+        <input type="file" id="fileIn" hidden>
+    </div>
+
+    <div class="controls" id="ui-main">
+        <div class="search-row">
+            <input type="search" id="searchInput" placeholder="Търсене на модел..." autocomplete="off">
+            <div class="autocomplete-list" id="autocompleteList"></div>
+            <button class="btn-tool" id="stockBtn" title="Само налични">📦</button>
+            <button class="btn-tool" id="resetBtn">✕</button>
+        </div>
+        <div class="filter-row">
+            <select id="sgFilter"><option value="">Група (Всички)</option></select>
+            <select id="brFilter"><option value="">Марка (Всички)</option></select>
+        </div>
+    </div>
+
+    <div id="list"></div>
+
+    <div class="bulk-actions" id="bulkActions">
+        <span id="selectedCount">0 избрани</span>
+        <button class="btn-tool" onclick="addSelectedToCart()" style="background: var(--ok); color: white;">➕ Добави в количката</button>
+        <button class="btn-tool" onclick="clearSelection()">✕ Отмени</button>
+    </div>
+
+    <div class="cart-bar" id="cartBar" style="display:none;">
+        📋 ПРЕГЛЕД НА ЗАЯВКАТА (<span id="cartCount">0</span> бр.)
+    </div>
+
+    <!-- Плаващ бутон за история -->
+    <button class="fab-history" onclick="showHistory()" title="История на заявките">📜</button>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content" id="printableContent">
+            <h3>ЗАЯВКА - АВТОЗОНА 33</h3>
+            <div id="modalItems"></div>
+            <div id="summaryBox" class="summary-box">
+                <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Позиции:</span> <span id="sPos">0</span></div>
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--p);"><span>Общо:</span> <span id="sTot">0 бр.</span></div>
+                <textarea id="orderComment" placeholder="Бележка..." style="width:100%; padding:8px; margin-top:10px; min-height:60px;"></textarea>
+            </div>
+            <div id="actionButtons" style="display:flex; flex-direction:column; gap:10px;">
+                <button class="action-btn" style="background:#2d3748;" onclick="window.print()">🖨️ ПЕЧАТ / PDF</button>
+                <button class="action-btn" style="background:var(--err);" id="emailBtn">📧 ИМЕЙЛ</button>
+                <button class="action-btn" style="background:var(--viber);" id="viberBtn">💬 VIBER</button>
+                <button class="action-btn" style="background:#38a169;" id="excelBtn">📊 ЕКСПОРТ В EXCEL</button>
+                <button class="action-btn" style="background:#e53e3e;" id="clearCartBtn">🗑️ ИЗЧИСТИ КОЛИЧКАТА</button>
+                <button id="closeCartBtn" style="color:gray; background:none; border:none; padding:10px; cursor:pointer;">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-modal" id="historyModal" onclick="if(event.target===this)closeHistory()">
+        <div style="background: white; border-radius: 15px; padding: 20px; max-width: 600px; margin: 20px auto;">
+            <h3 style="margin-bottom: 20px;">📜 История на заявките</h3>
+            <div id="historyList"></div>
+            <button onclick="closeHistory()" style="width: 100%; padding: 12px; margin-top: 20px; border: none; background: var(--p); color: white; border-radius: 10px; cursor: pointer;">Затвори</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let db = [];
+    let cart = new Map();
+    let selectedItems = new Set();
+    let stockOnly = false;
+    const MASTER_PASS = "AZ33";
+    const LOW_STOCK_THRESHOLD = 5;
+
+    document.getElementById('loginBtn').addEventListener('click', checkPass);
+    document.getElementById('uploadZone').addEventListener('click', () => document.getElementById('fileIn').click());
+    document.getElementById('fileIn').addEventListener('change', handleFile);
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    document.getElementById('searchInput').addEventListener('focus', showAutocomplete);
+    document.getElementById('stockBtn').addEventListener('click', toggleStock);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    document.getElementById('cartBar').addEventListener('click', openCart);
+    document.getElementById('closeCartBtn').addEventListener('click', () => document.getElementById('cartModal').style.display = 'none');
+    document.getElementById('emailBtn').addEventListener('click', sendMail);
+    document.getElementById('viberBtn').addEventListener('click', copyViber);
+    document.getElementById('clearCartBtn').addEventListener('click', clearCart);
+    document.getElementById('excelBtn').addEventListener('click', exportToExcel);
+
+    window.onload = () => {
+        if (sessionStorage.getItem('az_auth') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            loadData();
+            loadCart();
+            initSync();
+        }
+    };
+
+    function checkPass() {
+        if(document.getElementById('passInput').value.toUpperCase() === MASTER_PASS) {
+            sessionStorage.setItem('az_auth', 'true');
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            loadData();
+            loadCart();
+            initSync();
+        } else { alert("Грешен код!"); }
+    }
+
+    function initSync() {
+        setInterval(() => {
+            const status = document.getElementById('syncStatus');
+            status.classList.add('show');
+            setTimeout(() => status.classList.remove('show'), 2000);
+        }, 30000);
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('az_db_v15_1');
+        if(saved) {
+            db = JSON.parse(saved);
+            initF(); handleSearch();
+        } else { document.getElementById('uploadZone').style.display = 'block'; }
+    }
+
+    function loadCart() {
+        const savedCart = localStorage.getItem('az_cart');
+        if (savedCart) {
+            cart = new Map(JSON.parse(savedCart));
+            updateUI();
+        }
+    }
+
+    function saveCart() {
+        localStorage.setItem('az_cart', JSON.stringify([...cart]));
+    }
+
+    function handleFile(e) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
+            process(rows);
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    }
+
+    function process(rows) {
+        let hIdx = rows.findIndex(r => r && r.some(c => String(c).toLowerCase().includes('стока')));
+        const h = rows[hIdx || 0].map(c => String(c || '').toLowerCase().trim());
+        const find = (k) => h.findIndex(x => k.some(y => x.includes(y)));
+
+        db = rows.slice((hIdx || 0) + 1).filter(r => r[find(['стока'])]).map((r, i) => {
+            const g = String(r[find(['група'])] || '').split('/');
+            return {
+                id: 'az' + i,
+                c: String(r[find(['код'])] || ''),
+                n: String(r[find(['стока'])] || ''),
+                sg: g[1] || 'Общи',
+                br: g[2] || 'Други',
+                w: Math.max(0, parseFloat(String(r[find(['склад'])] || 0).replace(',','.')) || 0)
+            };
+        });
+        localStorage.setItem('az_db_v15_1', JSON.stringify(db));
+        location.reload();
+    }
+
+    function setQty(id, val) {
+        const item = db.find(it => it.id === id);
+        let v = parseInt(val);
+        if (isNaN(v)) v = 0;
+        if (v > item.w) v = Math.floor(item.w);
+        if (v < 0) v = 0;
+
+        if (v === 0) cart.delete(id); else cart.set(id, v);
+        
+        const inputs = document.querySelectorAll(`input[data-item-id="${id}"]`);
+        inputs.forEach(i => i.value = v);
+
+        const plusBtns = document.querySelectorAll(`button[data-btn-plus="${id}"]`);
+        plusBtns.forEach(b => b.disabled = (v >= item.w));
+
+        saveCart();
+        updateUI();
+    }
+
+    function updateUI() {
+        let t = 0; cart.forEach(v => t += v);
+        document.getElementById('cartBar').style.display = t > 0 ? 'block' : 'none';
+        document.getElementById('cartCount').innerText = t;
+    }
+
+    function render(data) {
+        const container = document.getElementById('list');
+        container.innerHTML = data.map(i => {
+            const q = cart.get(i.id) || 0;
+            const isLowStock = i.w > 0 && i.w <= LOW_STOCK_THRESHOLD;
+            return `
+            <div class="product-card ${isLowStock ? 'low-stock' : ''}">
+                <input type="checkbox" class="checkbox-select" data-select-id="${i.id}" onchange="toggleSelect('${i.id}')" ${selectedItems.has(i.id) ? 'checked' : ''}>
+                <div class="p-header">
+                    <span class="p-code">${i.c}</span>
+                    <div class="order-controls">
+                        <button class="btn-qty minus" data-id="${i.id}">−</button>
+                        <input type="number" class="qty-input" data-item-id="${i.id}" value="${q}">
+                        <button class="btn-qty plus" data-btn-plus="${i.id}" data-id="${i.id}" ${q >= i.w ? 'disabled' : ''}>+</button>
+                    </div>
+                </div>
+                <div style="font-weight:bold; color:var(--p); padding-left: 30px;">${i.n}</div>
+                <div style="font-size:0.75rem; color:gray; margin-top:4px; padding-left: 30px;">
+                    Склад: ${i.w > 9 ? '9+' : i.w} бр. ${isLowStock ? '⚠️ Ниска наличност' : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        container.querySelectorAll('.minus').forEach(b => b.onclick = () => setQty(b.dataset.id, (cart.get(b.dataset.id) || 0) - 1));
+        container.querySelectorAll('.plus').forEach(b => b.onclick = () => setQty(b.dataset.id, (cart.get(b.dataset.id) || 0) + 1));
+        container.querySelectorAll('.qty-input').forEach(inp => inp.onchange = () => setQty(inp.dataset.itemId, inp.value));
+    }
+
+    function toggleSelect(id) {
+        if (selectedItems.has(id)) {
+            selectedItems.delete(id);
+        } else {
+            selectedItems.add(id);
+        }
+        updateBulkActions();
+    }
+
+    function updateBulkActions() {
+        const count = selectedItems.size;
+        document.getElementById('selectedCount').innerText = count + ' избрани';
+        document.getElementById('bulkActions').classList.toggle('show', count > 0);
+    }
+
+    function addSelectedToCart() {
+        selectedItems.forEach(id => {
+            const item = db.find(i => i.id === id);
+            if (item && item.w > 0) {
+                const currentQty = cart.get(id) || 0;
+                setQty(id, Math.min(currentQty + 1, item.w));
+            }
+        });
+        clearSelection();
+    }
+
+    function clearSelection() {
+        selectedItems.clear();
+        updateBulkActions();
+        handleSearch();
+    }
+
+    function handleSearch() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const sg = document.getElementById('sgFilter').value;
+        const br = document.getElementById('brFilter').value;
+        let fil = db.filter(i => (!sg || i.sg === sg) && (!br || i.br === br) && (i.n.toLowerCase().includes(q) || i.c.toLowerCase().includes(q)));
+        if(stockOnly) fil = fil.filter(i => i.w > 0);
+        render(fil);
+        updateAutocomplete(fil);
+    }
+
+    function showAutocomplete() {
+        const list = document.getElementById('autocompleteList');
+        if (document.getElementById('searchInput').value.length > 0) {
+            list.style.display = 'block';
+        }
+    }
+
+    function updateAutocomplete(items) {
+        const list = document.getElementById('autocompleteList');
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        
+        if (query.length < 2) {
+            list.style.display = 'none';
+            return;
+        }
+
+        const suggestions = items.slice(0, 5).map(i => 
+            `<div class="autocomplete-item" onclick="selectAutocomplete('${i.n}')">${i.n} (${i.c})</div>`
+        ).join('');
+        
+        list.innerHTML = suggestions;
+        list.style.display = suggestions ? 'block' : 'none';
+    }
+
+    function selectAutocomplete(name) {
+        document.getElementById('searchInput').value = name;
+        document.getElementById('autocompleteList').style.display = 'none';
+        handleSearch();
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-row')) {
+            document.getElementById('autocompleteList').style.display = 'none';
+        }
+    });
+
+    function initF() {
+        const sgs = [...new Set(db.map(i => i.sg))].sort();
+        document.getElementById('sgFilter').innerHTML = '<option value="">Група (Всички)</option>' + sgs.map(g => `<option value="${g}">${g}</option>`).join('');
+        const sel = document.getElementById('sgFilter');
+        sel.onchange = () => { updateF(); handleSearch(); };
+        updateF();
+    }
+
+    function updateF() {
+        const sel = document.getElementById('sgFilter').value;
+        const brs = [...new Set(db.filter(i => !sel || i.sg === sel).map(i => i.br))].sort();
+        const brEl = document.getElementById('brFilter');
+        brEl.innerHTML = '<option value="">Марка (Всички)</option>' + brs.map(b => `<option value="${b}">${b}</option>`).join('');
+        brEl.onchange = handleSearch;
+    }
+
+    function toggleStock() { stockOnly = !stockOnly; document.getElementById('stockBtn').classList.toggle('active'); handleSearch(); }
+    function resetAll() { document.getElementById('searchInput').value=''; document.getElementById('sgFilter').value=''; stockOnly=false; document.getElementById('stockBtn').classList.remove('active'); updateF(); handleSearch(); }
+
+    function openCart() {
+        const cont = document.getElementById('modalItems');
+        let html = ''; let tQ = 0; let pos = 0;
+        cart.forEach((q, id) => {
+            if(q > 0) {
+                const i = db.find(it => it.id === id);
+                html += `<div class="modal-item">
+                    <div><b>${i.n}</b><br><small>${i.c}</small></div>
+                    <div style="display:flex; align-items:center;">
+                        <b>${q} бр.</b>
+                        <span class="remove-item" onclick="removeFromCart('${id}')" title="Премахни">✕</span>
+                    </div>
+                </div>`;
+                tQ += q; pos++;
+            }
+        });
+        cont.innerHTML = html;
+        document.getElementById('sPos').innerText = pos;
+        document.getElementById('sTot').innerText = tQ + ' бр.';
+        document.getElementById('cartModal').style.display = 'block';
+    }
+
+    function removeFromCart(id) {
+        setQty(id, 0);
+        openCart();
+    }
+
+    function genTxt() {
+        let tQ = 0; let pos = 0;
+        let msg = "АВТОЗОНА 33 - ЗАЯВКА\n------------------\n";
+        cart.forEach((q, id) => {
+            if(q > 0) {
+                const i = db.find(it => it.id === id);
+                msg += `• ${i.n} [${i.c}] - ${q}бр.\n`;
+                tQ += q; pos++;
+            }
+        });
+        msg += `\n------------------\nПозиции: ${pos}\nОбщо: ${tQ} бр.`;
+        let comm = document.getElementById('orderComment').value;
+        if(comm) msg += `\n\nКОМЕНТАР:\n${comm}`;
+        return msg;
+    }
+
+    function sendMail() { 
+        saveOrderToHistory();
+        window.location.href = `mailto:?subject=Заявка Автозона 33&body=${encodeURIComponent(genTxt())}`; 
+    }
+    
+    async function copyViber() { 
+        saveOrderToHistory();
+        await navigator.clipboard.writeText(genTxt()); 
+        alert("Копирано!"); 
+        window.location.href = "viber://forward?text=" + encodeURIComponent("Заявката е в паметта на телефона."); 
+    }
+
+    function exportToExcel() {
+        saveOrderToHistory();
+        const data = [];
+        cart.forEach((q, id) => {
+            if(q > 0) {
+                const i = db.find(it => it.id === id);
+                data.push({ 'Код': i.c, 'Стока': i.n, 'Количество': q, 'Група': i.sg, 'Марка': i.br });
+            }
+        });
+        
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Заявка");
+        
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        XLSX.writeFile(wb, `Заявка_Автозона33_${dateStr}.xlsx`);
+    }
+
+    function saveOrderToHistory() {
+        const order = {
+            date: new Date().toISOString(),
+            items: Array.from(cart.entries()).map(([id, qty]) => {
+                const item = db.find(i => i.id === id);
+                return { name: item.n, code: item.c, qty: qty };
+            }),
+            comment: document.getElementById('orderComment').value
+        };
+        
+        let history = JSON.parse(localStorage.getItem('az_history') || '[]');
+        history.unshift(order);
+        if (history.length > 50) history = history.slice(0, 50);
+        localStorage.setItem('az_history', JSON.stringify(history));
+    }
+
+    function showHistory() {
+        const history = JSON.parse(localStorage.getItem('az_history') || '[]');
+        const container = document.getElementById('historyList');
+        
+        if (history.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: gray;">Няма запазени заявки</p>';
+        } else {
+            container.innerHTML = history.map((h, idx) => {
+                const date = new Date(h.date);
+                const dateStr = date.toLocaleDateString('bg-BG') + ' ' + date.toLocaleTimeString('bg-BG');
+                const items = h.items.map(i => `• ${i.name} - ${i.qty}бр.`).join('<br>');
+                return `<div class="history-item">
+                    <div class="history-date">${dateStr}</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">${items}</div>
+                    ${h.comment ? `<div style="font-style: italic; color: gray; font-size: 0.85rem;">Бележка: ${h.comment}</div>` : ''}
+                </div>`;
+            }).join('');
+        }
+        
+        document.getElementById('historyModal').style.display = 'block';
+    }
+
+    function closeHistory() {
+        document.getElementById('historyModal').style.display = 'none';
+    }
+
+    function clearData() { if(confirm("Изчистване на базата?")) { localStorage.removeItem('az_db_v15_1'); location.reload(); } }
+    
+    function clearCart() {
+        if(confirm("Сигурни ли сте, че искате да изчистите количката?")) {
+            cart.clear();
+            saveCart();
+            updateUI();
+            handleSearch();
+            document.getElementById('cartModal').style.display = 'none';
+            document.getElementById('orderComment').value = '';
+        }
+    }
+</script>
+
+</body>
+</html>
