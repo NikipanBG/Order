@@ -22,23 +22,30 @@
     </script>
 
     <style>
-        :root { --p: #1a365d; --s: #2b6cb0; --ok: #48bb78; --err: #c53030; --bg: #f7fafc; --card: #ffffff; --border: #e2e8f0; }
+        :root { --p: #1a365d; --s: #2b6cb0; --ok: #48bb78; --err: #c53030; --bg: #f7fafc; --card: #ffffff; --border: #e2e8f0; --warn: #ed8936; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
         body { background: var(--bg); padding-bottom: 80px; }
         #loginOverlay { position: fixed; inset: 0; background: var(--p); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; }
-        .login-box input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid var(--border); border-radius: 10px; text-align: center; }
+        .login-box input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid var(--border); border-radius: 10px; text-align: center; font-size: 1.2rem; }
         .login-box button { background: var(--s); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; }
-        .header { background: var(--p); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; }
+        .header { background: var(--p); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         #uploadZone { text-align: center; padding: 40px; border: 2px dashed #ccc; margin: 20px; background: white; border-radius: 15px; cursor: pointer; }
-        .controls { background: white; padding: 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        #searchInput { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--s); outline: none; }
-        .product-card { background: white; margin: 10px; padding: 15px; border-radius: 10px; border: 1px solid var(--border); }
-        .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .order-controls { display: flex; align-items: center; gap: 10px; background: #f0f4f8; padding: 5px; border-radius: 20px; }
-        .btn-qty { background: var(--s); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; }
+        .controls { background: white; padding: 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+        .search-row { display: flex; gap: 8px; }
+        #searchInput { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--s); outline: none; font-size: 16px; }
+        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        select { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 0.85rem; }
+        .product-card { background: white; margin: 8px; padding: 12px; border-radius: 10px; border: 1px solid var(--border); position: relative; }
+        .product-card.low-stock { border-left: 4px solid var(--warn); }
+        .p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .p-code { font-weight: bold; background: #ebf8ff; color: #2c5282; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; }
+        .order-controls { display: flex; align-items: center; gap: 5px; background: #edf2f7; padding: 4px; border-radius: 20px; }
+        .btn-qty { background: var(--s); color: white; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; }
         .qty-input { width: 40px; border: none; background: transparent; text-align: center; font-weight: bold; }
-        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p); color: white; padding: 15px; text-align: center; cursor: pointer; z-index: 200; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--p); color: white; padding: 18px; text-align: center; font-weight: bold; cursor: pointer; z-index: 200; }
+        .btn-tool { padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: white; cursor: pointer; }
+        .btn-tool.active { background: var(--ok); color: white; }
     </style>
 </head>
 <body>
@@ -52,20 +59,31 @@
 </div>
 
 <div id="mainApp" style="display: none;">
-    <div class="header"><h1>АВТОЗОНА 33</h1></div>
+    <div class="header">
+        <div style="width:50px"></div>
+        <h1>АВТОЗОНА 33</h1>
+        <button onclick="clearData()" style="background:none; border:1px solid white; color:white; padding:4px 8px; border-radius:5px; font-size:0.6rem;">ОБНОВИ</button>
+    </div>
 
     <div id="uploadZone" onclick="document.getElementById('fileIn').click()">
-        <p>📁 НАТИСНИ ТУК, ЗА ДА ЗАРЕДИШ EXCEL</p>
+        <p>📁 НАТИСНИ ТУК ЗА EXCEL ФАЙЛ</p>
         <input type="file" id="fileIn" hidden onchange="handleFile(event)">
     </div>
 
-    <div class="controls" id="searchUI" style="display:none;">
-        <input type="search" id="searchInput" placeholder="Търсене на модел или код..." oninput="handleSearch()">
+    <div class="controls" id="ui-main" style="display:none;">
+        <div class="search-row">
+            <input type="search" id="searchInput" placeholder="Търсене..." oninput="handleSearch()">
+            <button class="btn-tool" id="stockBtn" onclick="toggleStock()">📦</button>
+        </div>
+        <div class="filter-row">
+            <select id="sgFilter" onchange="updateF(); handleSearch()"><option value="">Група (Всички)</option></select>
+            <select id="brFilter" onchange="handleSearch()"><option value="">Марка (Всички)</option></select>
+        </div>
     </div>
 
     <div id="list"></div>
 
-    <div class="cart-bar" id="cartBar" style="display:none;" onclick="alert('Заявката е копирана! Използвай Viber.'); copyViber();">
+    <div class="cart-bar" id="cartBar" style="display:none;" onclick="copyViber()">
         📋 КОПИРАЙ ЗАЯВКАТА (<span id="cartCount">0</span> бр.)
     </div>
 </div>
@@ -73,70 +91,98 @@
 <script>
     let db = [];
     let cart = new Map();
+    let stockOnly = false;
 
     function checkPass() {
         if(document.getElementById('passInput').value.toUpperCase() === "AZ33") {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            const saved = localStorage.getItem('az_db');
-            if(saved) { 
-                db = JSON.parse(saved); 
-                document.getElementById('uploadZone').style.display = 'none';
-                document.getElementById('searchUI').style.display = 'block';
-                handleSearch(); 
-            }
+            loadData();
         } else { alert("Грешен код!"); }
     }
 
+    function loadData() {
+        const saved = localStorage.getItem('az_db_final');
+        if(saved) {
+            db = JSON.parse(saved);
+            document.getElementById('uploadZone').style.display = 'none';
+            document.getElementById('ui-main').style.display = 'flex';
+            initF();
+            handleSearch();
+        }
+    }
+
     function handleFile(e) {
-        const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = (evt) => {
             const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
+            const wb = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
             
-            // Намиране на колоните (Стока, Код, Склад)
             let hIdx = rows.findIndex(r => r && r.some(c => String(c).toLowerCase().includes('стока')));
             const h = rows[hIdx].map(c => String(c || '').toLowerCase().trim());
-            const colIdx = (keys) => h.findIndex(x => keys.some(y => x.includes(y)));
+            const col = (keys) => h.findIndex(x => keys.some(y => x.includes(y)));
 
-            db = rows.slice(hIdx + 1).filter(r => r[colIdx(['стока'])]).map((r, i) => ({
-                id: 'id' + i,
-                c: String(r[colIdx(['код'])] || ''),
-                n: String(r[colIdx(['стока'])] || ''),
-                w: parseFloat(String(r[colIdx(['склад'])] || 0).replace(',','.')) || 0
-            }));
+            db = rows.slice(hIdx + 1).filter(r => r[col(['стока'])]).map((r, i) => {
+                const g = String(r[col(['група'])] || '').split('/');
+                return {
+                    id: 'az' + i,
+                    c: String(r[col(['код'])] || ''),
+                    n: String(r[col(['стока'])] || ''),
+                    sg: g[1] || 'Общи',
+                    br: g[2] || 'Други',
+                    w: parseFloat(String(r[col(['склад'])] || 0).replace(',','.')) || 0
+                };
+            });
 
-            localStorage.setItem('az_db', JSON.stringify(db));
-            alert("Файлът е зареден успешно!");
+            localStorage.setItem('az_db_final', JSON.stringify(db));
             location.reload();
         };
-        reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(e.target.files[0]);
+    }
+
+    function initF() {
+        const sgs = [...new Set(db.map(i => i.sg))].sort();
+        document.getElementById('sgFilter').innerHTML = '<option value="">Група (Всички)</option>' + sgs.map(g => `<option value="${g}">${g}</option>`).join('');
+        updateF();
+    }
+
+    function updateF() {
+        const sel = document.getElementById('sgFilter').value;
+        const brs = [...new Set(db.filter(i => !sel || i.sg === sel).map(i => i.br))].sort();
+        document.getElementById('brFilter').innerHTML = '<option value="">Марка (Всички)</option>' + brs.map(b => `<option value="${b}">${b}</option>`).join('');
     }
 
     function handleSearch() {
         const q = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = db.filter(i => i.n.toLowerCase().includes(q) || i.c.toLowerCase().includes(q));
-        render(filtered);
+        const sg = document.getElementById('sgFilter').value;
+        const br = document.getElementById('brFilter').value;
+        
+        let fil = db.filter(i => 
+            (!sg || i.sg === sg) && 
+            (!br || i.br === br) && 
+            (i.n.toLowerCase().includes(q) || i.c.toLowerCase().includes(q))
+        );
+        
+        if(stockOnly) fil = fil.filter(i => i.w > 0);
+        render(fil);
     }
 
     function render(data) {
-        document.getElementById('list').innerHTML = data.slice(0, 50).map(i => {
+        document.getElementById('list').innerHTML = data.slice(0, 100).map(i => {
             const qty = cart.get(i.id) || 0;
             return `
-            <div class="product-card">
+            <div class="product-card ${i.w > 0 && i.w <= 5 ? 'low-stock' : ''}">
                 <div class="p-header">
-                    <span style="font-weight:bold; color:#2c5282;">${i.c}</span>
+                    <span class="p-code">${i.c}</span>
                     <div class="order-controls">
                         <button class="btn-qty" onclick="updateQty('${i.id}', ${qty - 1})">-</button>
                         <span class="qty-input">${qty}</span>
                         <button class="btn-qty" onclick="updateQty('${i.id}', ${qty + 1})">+</button>
                     </div>
                 </div>
-                <div style="font-weight:bold;">${i.n}</div>
-                <div style="font-size:0.8rem; color:gray;">Налично: ${i.w} бр.</div>
+                <div style="font-weight:bold; color:var(--p);">${i.n}</div>
+                <div style="font-size:0.75rem; color:gray; margin-top:4px;">Склад: ${i.w} бр.</div>
             </div>`;
         }).join('');
     }
@@ -147,10 +193,16 @@
         if (val > item.w) val = Math.floor(item.w);
         if (val === 0) cart.delete(id); else cart.set(id, val);
         
-        let total = 0; cart.forEach(v => total += v);
-        document.getElementById('cartBar').style.display = total > 0 ? 'block' : 'none';
-        document.getElementById('cartCount').innerText = total;
+        let t = 0; cart.forEach(v => t += v);
+        document.getElementById('cartBar').style.display = t > 0 ? 'block' : 'none';
+        document.getElementById('cartCount').innerText = t;
         handleSearch();
+    }
+
+    function toggleStock() { 
+        stockOnly = !stockOnly; 
+        document.getElementById('stockBtn').classList.toggle('active'); 
+        handleSearch(); 
     }
 
     function copyViber() {
@@ -159,8 +211,10 @@
             const i = db.find(it => it.id === id);
             txt += `• ${i.n} [${i.c}] - ${q}бр.\n`;
         });
-        navigator.clipboard.writeText(txt);
+        navigator.clipboard.writeText(txt).then(() => alert("Заявката е копирана! Постави я във Viber."));
     }
+
+    function clearData() { if(confirm("Изчистване на всички данни?")) { localStorage.clear(); location.reload(); } }
 </script>
 </body>
 </html>
