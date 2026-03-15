@@ -129,7 +129,27 @@
             <select id="brFilter"><option value="">Марка (Всички)</option></select>
         </div>
     </div>
+<!-- Търсачка за акумулатори -->
 
+<div id="battery-search-app"></div>
+
+<script>
+
+// Зареждане на HTML
+
+fetch('battery-search.html')
+
+.then(response => response.text())
+
+.then(html => {
+
+document.getElementById('battery-search-app').innerHTML = html;
+
+});
+
+</script>
+
+    
     <div id="list"></div>
 
     <div class="bulk-actions" id="bulkActions">
