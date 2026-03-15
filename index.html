@@ -1401,7 +1401,7 @@
                 return;
             }
             
-            let body = 'Заявка ЗА АВТОЗОНА 33\n\n';
+            let body = 'Заявка от АВТОЗОНА 33\n\n';
             cart.forEach(item => {
                 body += `${item.brand} - ${item.model} (${item.quantity} бр.)\n`;
             });
@@ -1496,8 +1496,6 @@
                 }
                 if (event.target === historyModal) {
                     closeHistoryModal();
-                    
-}
                 }
             };
         });
