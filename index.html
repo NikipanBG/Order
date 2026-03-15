@@ -1496,6 +1496,311 @@
                 }
                 if (event.target === historyModal) {
                     closeHistoryModal();
+                    /* ==================== ПОДОБРЕН МОБИЛЕН ИЗГЛЕД ==================== */
+@media (max-width: 768px) {
+    /* Toolbar - подреждаме в колона */
+    .toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* Търсачката да е цялата ширина */
+    .search-box {
+        width: 100%;
+    }
+    
+    .search-box input {
+        font-size: 16px; /* По-голям за мобилни */
+        padding: 15px 20px 15px 45px;
+    }
+    
+    /* Филтри - цялата ширина */
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+    }
+    
+    .filter-group label {
+        min-width: auto;
+        font-size: 14px;
+        color: #666;
+    }
+    
+    .filter-select {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        min-width: auto;
+    }
+    
+    /* Бутон за скриване на нулевите */
+    .hide-zero-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    /* Статистика - подреждане в редица */
+    .stats-bar {
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 12px 10px;
+        gap: 5px;
+    }
+    
+    .stats-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 3px;
+    }
+    
+    .stats-label {
+        font-size: 12px;
+    }
+    
+    .stats-value {
+        font-size: 14px;
+    }
+    
+    /* Продукти - една колона */
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        max-height: 500px;
+        padding: 5px;
+    }
+    
+    /* Продуктова карта */
+    .product-card {
+        padding: 15px;
+    }
+    
+    .product-brand {
+        font-size: 13px;
+    }
+    
+    .product-name {
+        font-size: 16px;
+        padding-right: 45px;
+    }
+    
+    .product-group {
+        font-size: 13px;
+    }
+    
+    .product-stock {
+        top: 15px;
+        right: 15px;
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+    
+    /* Количка - подобрен мобилен изглед */
+    .cart-panel {
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .cart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .cart-header > div {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .cart-items {
+        max-height: 400px;
+    }
+    
+    /* Всеки артикул в количката */
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .cart-item-info {
+        width: 100%;
+    }
+    
+    .cart-item-info h4 {
+        font-size: 15px;
+        margin-bottom: 5px;
+        padding-right: 30px; /* Място за X бутона */
+    }
+    
+    .cart-item-info p {
+        font-size: 13px;
+    }
+    
+    /* Контроли за количество */
+    .cart-item-actions {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+    
+    /* По-големи бутони за лесно цъкане */
+    .quantity-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        border-radius: 12px;
+        background: #f0f0f0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .quantity-btn:active {
+        background: #667eea;
+        color: white;
+        transform: scale(0.95);
+    }
+    
+    .quantity-input {
+        width: 70px;
+        height: 48px;
+        font-size: 18px;
+        border-radius: 12px;
+        border: 2px solid #667eea;
+    }
+    
+    .remove-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        border-radius: 12px;
+        background: #ff4444;
+        margin-left: auto;
+    }
+    
+    .remove-btn:active {
+        background: #cc0000;
+        transform: scale(0.95);
+    }
+    
+    /* Долна част на количката */
+    .cart-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding-top: 15px;
+    }
+    
+    .cart-total {
+        font-size: 18px;
+        text-align: center;
+    }
+    
+    .cart-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .cart-actions .tool-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px;
+        font-size: 14px;
+    }
+    
+    /* Модални прозорци */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 10px;
+        max-height: 90vh;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+    }
+    
+    .history-item {
+        padding: 15px;
+    }
+    
+    .history-date {
+        font-size: 14px;
+    }
+    
+    .history-summary {
+        font-size: 13px;
+    }
+    
+    /* Съобщение при липса на продукти */
+    .no-products {
+        padding: 30px 20px;
+        font-size: 15px;
+    }
+    
+    /* Статус бутон */
+    .status-badge {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    /* Избрани продукти */
+    .selected-count {
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+/* ==================== ЗА МНОГО МАЛКИ ЕКРАНИ ==================== */
+@media (max-width: 480px) {
+    .cart-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .cart-actions .tool-btn {
+        padding: 18px;
+        font-size: 16px;
+    }
+    
+    .quantity-btn, .remove-btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        height: 44px;
+    }
+    
+    .product-name {
+        font-size: 15px;
+    }
+}
+
+/* ==================== ЗА ГОЛЕМИ ТАБЛЕТИ ==================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
                 }
             };
         });
