@@ -1401,13 +1401,13 @@
                 return;
             }
             
-            let body = 'Заявка от АВТОЗОНА 33\n\n';
+            let body = 'Заявка за АВТОЗОНА 33\n\n';
             cart.forEach(item => {
                 body += `${item.brand} - ${item.model} (${item.quantity} бр.)\n`;
             });
             body += `\nОбщо: ${cart.reduce((sum, item) => sum + item.quantity, 0)} бр.`;
             
-            window.location.href = `mailto:?subject=Заявка от АВТОЗОНА 33&body=${encodeURIComponent(body)}`;
+            window.location.href = `mailto:?subject=Заявка за АВТОЗОНА 33&body=${encodeURIComponent(body)}`;
         }
         
         function viberCart() {
