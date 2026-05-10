@@ -65,7 +65,7 @@
             padding: 30px;
         }
         
-        /* Quick Add Section - НОВО */
+        /* Quick Add Section */
         .quick-add-section {
             background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
             border-radius: 15px;
@@ -645,57 +645,37 @@
             overflow-y: auto;
         }
         
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        
         .shortcuts-hint {
-            background: #f0f0f0;
+            background: rgba(255,255,255,0.2);
             padding: 8px 15px;
             border-radius: 50px;
             font-size: 12px;
-            color: #666;
             display: inline-flex;
             align-items: center;
             gap: 5px;
         }
         
         .shortcuts-hint kbd {
-            background: #333;
-            color: white;
+            background: rgba(0,0,0,0.3);
             padding: 2px 8px;
             border-radius: 5px;
             font-family: monospace;
             font-size: 11px;
-        }
-        
-        @media (max-width: 768px) {
-            .toolbar, .filters, .quick-add-row {
-                flex-direction: column;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
         }
         
         .frequent-products {
@@ -733,6 +713,98 @@
             color: white;
             border-color: #667eea;
         }
+        
+        .stats-bar {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stats-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .stats-label {
+            color: #666;
+        }
+        
+        .stats-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            display: none;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes shake {
+            0%,100%{transform:translateX(0)}
+            25%{transform:translateX(-5px)}
+            75%{transform:translateX(5px)}
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar, .filters, .quick-add-row {
+                flex-direction: column;
+            }
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 </head>
 <body>
@@ -746,14 +818,14 @@
         </div>
         
         <div class="main-content">
-            <!-- НОВО: Бързо добавяне по код/баркод -->
+            <!-- Бързо добавяне по код/баркод -->
             <div class="quick-add-section">
                 <div class="quick-add-title">
                     ⚡ БЪРЗО ДОБАВЯНЕ ПО КОД / БАРКОД
                 </div>
                 <div class="quick-add-row">
                     <div class="code-input-group">
-                        <input type="text" id="quickCodeInput" placeholder="Въведете или сканирайте код на продукт... (баркод/артикул)" autocomplete="off">
+                        <input type="text" id="quickCodeInput" placeholder="Въведете или сканирайте код на продукт..." autocomplete="off">
                         <span class="barcode-icon">📷</span>
                     </div>
                     <div class="quantity-add-group">
@@ -768,7 +840,7 @@
                     <button class="batch-add-toggle" onclick="toggleBatchAdd()">
                         📋 + Масово добавяне (няколко кода наведнъж)
                     </button>
-                    <textarea id="batchCodes" class="batch-textarea" rows="3" placeholder="Въведете кодове, всеки на нов ред или разделени със запетая&#10;Пример:&#10;BOS001, VAL002, HEL001&#10;или&#10;BOS001&#10;VAL002&#10;HEL001"></textarea>
+                    <textarea id="batchCodes" class="batch-textarea" rows="3" placeholder="Въведете кодове, всеки на нов ред или разделени със запетая&#10;Пример:&#10;1, 2, 3&#10;или&#10;1&#10;2&#10;3"></textarea>
                     <div class="batch-actions" id="batchActions">
                         <button class="tool-btn secondary" onclick="addBatchCodes()">➕ Добави всички</button>
                         <button class="tool-btn secondary" onclick="clearBatchArea()">🗑️ Изчисти</button>
@@ -798,13 +870,13 @@
                 <div class="filter-group">
                     <label>Група:</label>
                     <select class="filter-select" id="groupFilter" onchange="filterProducts()">
-                        <option value="all">Всички групи</option>
+                        <option value="all">📁 Всички групи</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label>Марка:</label>
                     <select class="filter-select" id="brandFilter" onchange="filterProducts()">
-                        <option value="all">Всички марки</option>
+                        <option value="all">🏷️ Всички марки</option>
                     </select>
                 </div>
                 <button class="hide-zero-btn" id="hideZeroBtn" onclick="toggleHideZero()">
@@ -815,7 +887,7 @@
                 </div>
             </div>
             
-            <div class="stats-bar" id="statsBar">
+            <div class="stats-bar">
                 <div class="stats-item">
                     <span class="stats-label">Общо продукти:</span>
                     <span class="stats-value" id="totalProducts">0</span>
@@ -830,7 +902,7 @@
                 </div>
             </div>
             
-            <!-- Често поръчвани продукти - НОВО -->
+            <!-- Често поръчвани продукти -->
             <div class="frequent-products" id="frequentProducts" style="display: none;">
                 <div class="frequent-title">⭐ ЧЕСТО ПОРЪЧВАНИ</div>
                 <div class="frequent-list" id="frequentList"></div>
@@ -870,8 +942,35 @@
     </div>
     
     <!-- Модални прозорци -->
-    <div class="modal" id="cartModal">...</div>
-    <div class="modal" id="historyModal">...</div>
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 ЗАЯВКА - АВТОЗОНА 33</h2>
+                <button class="modal-close" onclick="closeCartModal()">&times;</button>
+            </div>
+            <div id="modalCartItems"></div>
+            <div class="cart-footer">
+                <div class="cart-total" id="modalCartTotal">Общо: 0 бр.</div>
+                <div class="cart-actions">
+                    <button class="tool-btn primary" onclick="printCart()">🖨️ ПЕЧАТ / PDF</button>
+                    <button class="tool-btn primary" onclick="emailCart()">📧 ИМЕЙЛ</button>
+                    <button class="tool-btn primary" onclick="viberCart()">💬 VIBER</button>
+                    <button class="tool-btn primary" onclick="exportCart()">📊 ЕКСПОРТ В EXCEL</button>
+                    <button class="tool-btn secondary" onclick="clearCart()">🗑️ ИЗЧИСТИ КОЛИЧКАТА</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📜 История на заявките</h2>
+                <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+    </div>
 
     <script>
         // ==================== КОНФИГУРАЦИЯ ====================
@@ -887,10 +986,10 @@
         let searchTerm = '';
         let orderFrequency = JSON.parse(localStorage.getItem('orderFrequency') || '{}');
         
-        // ==================== НОВА ФУНКЦИЯ: ДОБАВЯНЕ ПО КОД ====================
+        // ==================== ДОБАВЯНЕ ПО КОД ====================
         function addProductByCode() {
             const codeInput = document.getElementById('quickCodeInput');
-            const code = codeInput.value.trim().toUpperCase();
+            const code = codeInput.value.trim();
             const quantity = parseInt(document.getElementById('quickQuantity').value) || 1;
             
             if (!code) {
@@ -898,14 +997,10 @@
                 return;
             }
             
-            // Търсене на продукт по код
-            const product = allProducts.find(p => 
-                p.code && p.code.toUpperCase() === code
-            );
+            const product = allProducts.find(p => p.code && p.code.toString() === code);
             
             if (!product) {
                 showNotification(`❌ Не е намерен продукт с код: ${code}`);
-                // Вибрация на полето при грешка
                 codeInput.style.animation = 'shake 0.3s ease';
                 setTimeout(() => { codeInput.style.animation = ''; }, 300);
                 return;
@@ -916,27 +1011,22 @@
                 return;
             }
             
-            // Добавяне в количката
             const existingItem = cart.find(item => item.id === product.id);
             const maxStock = product.stock > 9 ? 999 : product.stock;
             const currentQuantity = existingItem ? existingItem.quantity : 0;
             const newQuantity = currentQuantity + quantity;
             
             if (newQuantity > maxStock) {
-                showNotification(`⚠ Достигнахте максималната наличност (${formatStock(product.stock)}) за ${product.brand} ${product.model}`);
+                showNotification(`⚠ Достигнахте максималната наличност (${formatStock(product.stock)})`);
                 return;
             }
             
             if (existingItem) {
                 existingItem.quantity = newQuantity;
             } else {
-                cart.push({
-                    ...product,
-                    quantity: quantity
-                });
+                cart.push({ ...product, quantity: quantity });
             }
             
-            // Запазване на честота на поръчки
             orderFrequency[product.code] = (orderFrequency[product.code] || 0) + 1;
             localStorage.setItem('orderFrequency', JSON.stringify(orderFrequency));
             
@@ -945,14 +1035,11 @@
             renderProducts();
             updateFrequentProducts();
             
-            // Изчистване на полето за код и фокус върху него за следващо сканиране
             codeInput.value = '';
             codeInput.focus();
-            
             showNotification(`✅ Добавен: ${product.brand} ${product.model} x${quantity}`);
         }
         
-        // ==================== МАСОВО ДОБАВЯНЕ ====================
         function toggleBatchAdd() {
             const textarea = document.getElementById('batchCodes');
             const actions = document.getElementById('batchActions');
@@ -969,17 +1056,11 @@
                 return;
             }
             
-            // Разделяне на кодове - по нов ред или запетая
             let codes = [];
             if (codesText.includes('\n')) {
-                codes = codesText.split('\n').map(c => c.trim().toUpperCase()).filter(c => c);
+                codes = codesText.split('\n').map(c => c.trim()).filter(c => c);
             } else {
-                codes = codesText.split(',').map(c => c.trim().toUpperCase()).filter(c => c);
-            }
-            
-            if (codes.length === 0) {
-                showNotification('❌ Няма валидни кодове');
-                return;
+                codes = codesText.split(',').map(c => c.trim()).filter(c => c);
             }
             
             let added = 0;
@@ -987,7 +1068,7 @@
             let outOfStock = [];
             
             codes.forEach(code => {
-                const product = allProducts.find(p => p.code && p.code.toUpperCase() === code);
+                const product = allProducts.find(p => p.code && p.code.toString() === code);
                 if (!product) {
                     notFound.push(code);
                 } else if (product.stock === 0) {
@@ -1018,10 +1099,8 @@
             let message = `✅ Добавени ${added} продукта`;
             if (notFound.length > 0) message += `\n❌ Не са намерени: ${notFound.join(', ')}`;
             if (outOfStock.length > 0) message += `\n⚠ Няма наличност: ${outOfStock.join(', ')}`;
-            
             showNotification(message);
             
-            // Изчистване на текстовото поле
             if (added === codes.length) {
                 textarea.value = '';
                 textarea.classList.remove('active');
@@ -1033,26 +1112,25 @@
             document.getElementById('batchCodes').value = '';
         }
         
-        // ==================== ЧЕСТО ПОРЪЧВАНИ ПРОДУКТИ ====================
         function updateFrequentProducts() {
             const frequentContainer = document.getElementById('frequentProducts');
             const frequentList = document.getElementById('frequentList');
             
-            // Вземаме топ 5 най-често поръчвани продукта
             const sorted = Object.entries(orderFrequency)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 5);
             
-            if (sorted.length === 0) {
+            if (sorted.length === 0 || allProducts.length === 0) {
                 frequentContainer.style.display = 'none';
                 return;
             }
             
             frequentContainer.style.display = 'block';
             frequentList.innerHTML = sorted.map(([code, count]) => {
-                const product = allProducts.find(p => p.code === code);
+                const product = allProducts.find(p => p.code && p.code.toString() === code);
                 if (!product) return '';
-                return `<div class="frequent-tag" onclick="quickAddByCode('${code}')">${product.brand} ${product.model} (${count})</div>`;
+                const shortName = product.model.length > 30 ? product.model.substring(0, 27) + '...' : product.model;
+                return `<div class="frequent-tag" onclick="quickAddByCode('${code}')">${product.brand}: ${shortName} (${count})</div>`;
             }).join('');
         }
         
@@ -1061,19 +1139,14 @@
             addProductByCode();
         }
         
-        // ==================== ОСТАНАЛИТЕ ФУНКЦИИ ОТ ПРЕДИШНАТА ВЕРСИЯ ====================
-        // (запазвам ги същите, добавяйки code в renderProducts)
-        
+        // ==================== ЗАРЕЖДАНЕ НА ДАННИ ====================
         function loadProductsFromGoogleSheets() {
             showLoading(true);
             updateStatus('⏳ Зареждане...');
             
             const url = GOOGLE_SHEETS_URL + '&nocache=' + new Date().getTime();
             
-            fetch(url, { 
-                mode: 'cors',
-                cache: 'no-store'
-            })
+            fetch(url, { mode: 'cors', cache: 'no-store' })
                 .then(response => response.text())
                 .then(csvData => {
                     allProducts = parseCSV(csvData);
@@ -1111,12 +1184,12 @@
                 
                 const parsedProduct = {
                     id: i,
-                    brand: product['Марка'] || product['Brand'] || 'Няма марка',
-                    model: product['Модел'] || product['Model'] || 'Без модел',
-                    group: product['Група'] || product['Group'] || 'Общи',
-                    stock: parseInt(product['Наличност'] || product['Stock'] || '0'),
+                    brand: product['Марка'] || product['Brand'] || product['brand'] || 'Няма марка',
+                    model: product['Модел'] || product['Model'] || product['model'] || 'Без модел',
+                    group: product['Група'] || product['Group'] || product['group'] || 'Общи',
+                    stock: parseInt(product['Наличност'] || product['Stock'] || product['stock'] || product['Количество'] || '0'),
                     code: product['Код'] || product['Code'] || product['code'] || `PRD${i}`,
-                    description: product['Описание'] || ''
+                    description: product['Описание'] || product['Description'] || ''
                 };
                 
                 if (isNaN(parsedProduct.stock)) parsedProduct.stock = 0;
@@ -1143,60 +1216,24 @@
         
         function loadSampleData() {
             allProducts = [
-                { id: 1, brand: 'Bosch', model: 'Нагревател свещи', group: 'Горивна система', stock: 5, code: 'BOS001', description: '' },
-                { id: 2, brand: 'Bosch', model: 'Сензор ABS', group: 'Спирачна система', stock: 3, code: 'BOS002', description: '' },
-                { id: 3, brand: 'Valeo', model: 'Съединител', group: 'Трансмисия', stock: 0, code: 'VAL001', description: '' },
-                { id: 4, brand: 'Valeo', model: 'Алтернатор', group: 'Електрика', stock: 12, code: 'VAL002', description: '' },
-                { id: 5, brand: 'Hella', model: 'Фар ляв', group: 'Осветление', stock: 8, code: 'HEL001', description: '' },
-                { id: 6, brand: 'Hella', model: 'Фар десен', group: 'Осветление', stock: 2, code: 'HEL002', description: '' },
-                { id: 7, brand: 'SKF', model: 'Лагер колело', group: 'Окачване', stock: 15, code: 'SKF001', description: '' },
-                { id: 8, brand: 'SKF', model: 'Лагер скоростна кутия', group: 'Трансмисия', stock: 4, code: 'SKF002', description: '' },
-                { id: 9, brand: 'Bosch', model: 'Стартер', group: 'Електрика', stock: 7, code: 'BOS003', description: '' },
-                { id: 10, brand: 'Valeo', model: 'Чистачки', group: 'Аксесоари', stock: 20, code: 'VAL003', description: '' }
+                { id: 1, brand: 'Grom', model: '100Ah 780A D31 JL+ Grom EFB', group: 'Автомобили', stock: 12, code: '1', description: '' },
+                { id: 2, brand: 'Grom', model: '100Ah 780A D31 JR+ Grom EFB', group: 'Автомобили', stock: 50, code: '2', description: '' },
+                { id: 3, brand: 'Grom', model: '100Ah 800A D31 Neutral JL+', group: 'Автомобили', stock: 1, code: '3', description: '' },
+                { id: 4, brand: 'Grom', model: '100Ah 850A D31 JL+ Grom', group: 'Автомобили', stock: 19, code: '4', description: '' },
+                { id: 5, brand: 'Grom', model: '100Ah 850A D31 JR+ Grom', group: 'Автомобили', stock: 117, code: '5', description: '' },
+                { id: 6, brand: 'Grom', model: '110Ah 900A L5 Grom', group: 'Автомобили', stock: 96, code: '6', description: '' },
+                { id: 7, brand: 'Grom', model: '110Ah 900A L6 Grom', group: 'Автомобили', stock: 10, code: '7', description: '' },
+                { id: 8, brand: 'EAS', model: '12V105AH - 960A EAS Activa L5', group: 'Автомобили', stock: 0, code: '8', description: '' }
             ];
             initializeFilters();
             filterProducts();
             updateFrequentProducts();
             updateStats();
-            updateStatus('⚠ Демо данни');
+            updateStatus('⚠ Демо данни (няма връзка)');
             showLoading(false);
         }
         
-        function initializeFilters() { updateSmartFilters(); }
-        
-        function updateSmartFilters() {
-            let baseProducts = allProducts;
-            if (searchTerm) {
-                const term = searchTerm.toLowerCase();
-                baseProducts = allProducts.filter(p => 
-                    p.brand.toLowerCase().includes(term) ||
-                    p.model.toLowerCase().includes(term) ||
-                    p.group.toLowerCase().includes(term) ||
-                    p.code.toLowerCase().includes(term)
-                );
-            }
-            
-            const groups = [...new Set(baseProducts.map(p => p.group))].sort();
-            const brands = [...new Set(baseProducts.map(p => p.brand))].sort();
-            
-            const groupSelect = document.getElementById('groupFilter');
-            const brandSelect = document.getElementById('brandFilter');
-            const currentGroup = groupSelect.value;
-            
-            groupSelect.innerHTML = '<option value="all">Всички групи</option>' + 
-                groups.map(g => `<option value="${g}" ${g === currentGroup ? 'selected' : ''}>${g}</option>`).join('');
-            
-            let relevantBrands = brands;
-            if (currentGroup !== 'all') {
-                const productsInGroup = baseProducts.filter(p => p.group === currentGroup);
-                relevantBrands = [...new Set(productsInGroup.map(p => p.brand))].sort();
-            }
-            
-            const currentBrand = brandSelect.value;
-            brandSelect.innerHTML = '<option value="all">Всички марки</option>' + 
-                relevantBrands.map(b => `<option value="${b}" ${b === currentBrand ? 'selected' : ''}>${b}</option>`).join('');
-        }
-        
+        // ==================== ФУНКЦИИ ЗА ФИЛТРИРАНЕ (ИНТЕЛИГЕНТНИ) ====================
         function filterProducts() {
             const group = document.getElementById('groupFilter').value;
             const brand = document.getElementById('brandFilter').value;
@@ -1213,14 +1250,87 @@
                 );
             }
             
-            if (group !== 'all') filtered = filtered.filter(p => p.group === group);
-            if (brand !== 'all') filtered = filtered.filter(p => p.brand === brand);
-            if (hideZeroStock) filtered = filtered.filter(p => p.stock > 0);
+            if (group !== 'all') {
+                filtered = filtered.filter(p => p.group === group);
+            }
+            
+            if (brand !== 'all') {
+                filtered = filtered.filter(p => p.brand === brand);
+            }
+            
+            if (hideZeroStock) {
+                filtered = filtered.filter(p => p.stock > 0);
+            }
             
             filteredProducts = filtered;
             updateSmartFilters();
             renderProducts();
             updateStats();
+        }
+        
+        function updateSmartFilters() {
+            const groupFilter = document.getElementById('groupFilter');
+            const brandFilter = document.getElementById('brandFilter');
+            
+            const currentGroup = groupFilter.value;
+            const currentBrand = brandFilter.value;
+            
+            let searchBase = allProducts;
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                searchBase = searchBase.filter(p => 
+                    p.brand.toLowerCase().includes(term) ||
+                    p.model.toLowerCase().includes(term) ||
+                    p.group.toLowerCase().includes(term) ||
+                    p.code.toLowerCase().includes(term)
+                );
+            }
+            
+            const groups = [...new Set(searchBase.map(p => p.group))].sort();
+            groupFilter.innerHTML = '<option value="all">📁 Всички групи</option>' + 
+                groups.map(g => `<option value="${g}" ${g === currentGroup ? 'selected' : ''}>${g}</option>`).join('');
+            
+            let brandBase = searchBase;
+            if (currentGroup !== 'all') {
+                brandBase = brandBase.filter(p => p.group === currentGroup);
+            }
+            
+            const brands = [...new Set(brandBase.map(p => p.brand))].sort();
+            
+            let newBrand = currentBrand;
+            if (currentBrand !== 'all' && !brands.includes(currentBrand)) {
+                newBrand = 'all';
+            }
+            
+            brandFilter.innerHTML = '<option value="all">🏷️ Всички марки</option>' + 
+                brands.map(b => `<option value="${b}" ${b === newBrand ? 'selected' : ''}>${b}</option>`).join('');
+            
+            if (newBrand !== currentBrand) {
+                const finalGroup = groupFilter.value;
+                const finalBrand = brandFilter.value;
+                
+                let tempFiltered = allProducts;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    tempFiltered = tempFiltered.filter(p => 
+                        p.brand.toLowerCase().includes(term) ||
+                        p.model.toLowerCase().includes(term) ||
+                        p.group.toLowerCase().includes(term) ||
+                        p.code.toLowerCase().includes(term)
+                    );
+                }
+                if (finalGroup !== 'all') tempFiltered = tempFiltered.filter(p => p.group === finalGroup);
+                if (finalBrand !== 'all') tempFiltered = tempFiltered.filter(p => p.brand === finalBrand);
+                if (hideZeroStock) tempFiltered = tempFiltered.filter(p => p.stock > 0);
+                
+                filteredProducts = tempFiltered;
+                renderProducts();
+                updateStats();
+            }
+        }
+        
+        function initializeFilters() {
+            updateSmartFilters();
         }
         
         function handleSearch() {
@@ -1239,14 +1349,26 @@
         function updateStats() {
             document.getElementById('totalProducts').textContent = allProducts.length;
             document.getElementById('shownProducts').textContent = filteredProducts.length;
-            document.getElementById('inStockProducts').textContent = allProducts.filter(p => p.stock > 0).length;
+            const inStock = allProducts.filter(p => p.stock > 0).length;
+            document.getElementById('inStockProducts').textContent = inStock;
         }
         
-        function formatStock(stock) { return stock > 9 ? '>9' : stock.toString(); }
-        function getStockClass(stock) { return stock === 0 ? 'low' : stock <= 3 ? 'medium' : 'high'; }
+        function formatStock(stock) {
+            if (stock > 9) return '>9';
+            if (stock === 0) return '0';
+            return stock.toString();
+        }
         
+        function getStockClass(stock) {
+            if (stock === 0) return 'low';
+            if (stock <= 3) return 'medium';
+            return 'high';
+        }
+        
+        // ==================== РЕНДЕРИРАНЕ ====================
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
+            
             if (filteredProducts.length === 0) {
                 grid.innerHTML = '<div class="no-products">🔍 Няма намерени продукти</div>';
                 return;
@@ -1258,26 +1380,47 @@
                 const maxStock = product.stock > 9 ? 999 : product.stock;
                 const isOutOfStock = product.stock === 0;
                 const isMaxReached = currentQuantity >= maxStock;
+                const isSelected = selectedProducts.has(product.id);
                 
                 return `
-                <div class="product-card ${selectedProducts.has(product.id) ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}" 
+                <div class="product-card ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}" 
                      onclick="toggleProductSelection(${product.id})">
-                    <div class="product-brand">${product.brand}</div>
-                    <div class="product-name">${product.model}</div>
-                    <div class="product-code">📄 Код: ${product.code}</div>
-                    <div class="product-group">${product.group}</div>
-                    <div class="product-stock ${getStockClass(product.stock)}">📦 ${formatStock(product.stock)}</div>
-                    <div class="product-footer">
-                        <button class="add-btn" onclick="addToCart(${product.id}); event.stopPropagation();"
-                                ${isOutOfStock || isMaxReached ? 'disabled' : ''}>${isOutOfStock ? '×' : '+'}</button>
+                    <div class="product-brand">${escapeHtml(product.brand)}</div>
+                    <div class="product-name">${escapeHtml(product.model)}</div>
+                    <div class="product-code">📄 Код: ${escapeHtml(product.code)}</div>
+                    <div class="product-group">${escapeHtml(product.group)}</div>
+                    <div class="product-stock ${getStockClass(product.stock)}">
+                        📦 ${formatStock(product.stock)}
                     </div>
-                </div>`;
-            }).join('');
+                    <div class="product-footer">
+                        <button class="add-btn" 
+                                onclick="addToCart(${product.id}); event.stopPropagation();"
+                                ${isOutOfStock || isMaxReached ? 'disabled' : ''}>
+                            ${isOutOfStock ? '×' : '+'}
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+            
             updateSelectedCount();
         }
         
-        function toggleProductSelection(id) {
-            selectedProducts.has(id) ? selectedProducts.delete(id) : selectedProducts.add(id);
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        function toggleProductSelection(productId) {
+            if (selectedProducts.has(productId)) {
+                selectedProducts.delete(productId);
+            } else {
+                selectedProducts.add(productId);
+            }
             renderProducts();
         }
         
@@ -1285,20 +1428,29 @@
             document.getElementById('selectedCount').textContent = `${selectedProducts.size} избрани`;
         }
         
+        // ==================== КОЛИЧКА ====================
         function addToCart(productId) {
             const product = allProducts.find(p => p.id === productId);
-            if (!product || product.stock === 0) return;
+            if (!product) return;
+            
+            if (product.stock === 0) {
+                showNotification('❌ Продуктът не е наличен');
+                return;
+            }
             
             const existingItem = cart.find(item => item.id === productId);
             const maxStock = product.stock > 9 ? 999 : product.stock;
             
             if (existingItem && existingItem.quantity >= maxStock) {
-                showNotification(`⚠ Максимална наличност ${formatStock(product.stock)}`);
+                showNotification(`⚠ Достигнахте максималната наличност (${formatStock(product.stock)})`);
                 return;
             }
             
-            if (existingItem) existingItem.quantity++;
-            else cart.push({ ...product, quantity: 1 });
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
             
             orderFrequency[product.code] = (orderFrequency[product.code] || 0) + 1;
             localStorage.setItem('orderFrequency', JSON.stringify(orderFrequency));
@@ -1310,170 +1462,344 @@
             showNotification(`✅ Добавен: ${product.brand} ${product.model}`);
         }
         
-        function updateQuantity(id, newQty) {
-            const item = cart.find(i => i.id === id);
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+            saveCartToLocalStorage();
+            renderProducts();
+        }
+        
+        function updateQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
             if (!item) return;
-            const product = allProducts.find(p => p.id === id);
+            
+            const product = allProducts.find(p => p.id === productId);
             const maxStock = product.stock > 9 ? 999 : product.stock;
             
-            if (newQty < 1) removeFromCart(id);
-            else if (newQty > maxStock) {
-                showNotification(`⚠ Максимум ${formatStock(product.stock)}`);
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            if (newQuantity > maxStock) {
+                showNotification(`⚠ Максималната наличност е ${formatStock(product.stock)}`);
                 item.quantity = maxStock;
-            } else item.quantity = newQty;
+            } else {
+                item.quantity = newQuantity;
+            }
             
             updateCartDisplay();
             saveCartToLocalStorage();
             renderProducts();
         }
         
-        function removeFromCart(id) {
-            cart = cart.filter(i => i.id !== id);
-            updateCartDisplay();
-            saveCartToLocalStorage();
-            renderProducts();
+        function handleQuantityInput(productId, value) {
+            const quantity = parseInt(value);
+            if (!isNaN(quantity)) {
+                updateQuantity(productId, quantity);
+            }
         }
         
         function updateCartDisplay() {
-            const cartItemsDiv = document.getElementById('cartItems');
-            if (cart.length === 0) cartItemsDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Количката е празна</div>';
-            else {
-                cartItemsDiv.innerHTML = cart.map(item => {
+            const cartItems = document.getElementById('cartItems');
+            const cartPanelCount = document.getElementById('cartPanelCount');
+            const cartTotal = document.getElementById('cartTotal');
+            const cartCount = document.getElementById('cartCount');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Количката е празна</div>';
+            } else {
+                cartItems.innerHTML = cart.map(item => {
                     const product = allProducts.find(p => p.id === item.id);
-                    const maxStock = product?.stock > 9 ? 999 : (product?.stock || 999);
+                    const maxStock = product ? (product.stock > 9 ? 999 : product.stock) : 999;
+                    const isMaxReached = item.quantity >= maxStock;
+                    
                     return `
                     <div class="cart-item">
                         <div class="cart-item-info">
-                            <h4>${item.brand} - ${item.model}</h4>
-                            <p>Код: ${item.code} | Група: ${item.group}</p>
+                            <h4>${escapeHtml(item.brand)} - ${escapeHtml(item.model)}</h4>
+                            <p>Код: ${escapeHtml(item.code)} | Група: ${escapeHtml(item.group)}</p>
+                            ${isMaxReached ? '<div class="stock-warning" style="color:#ef6c00;font-size:12px;">⚠ Максимална наличност</div>' : ''}
                         </div>
                         <div class="cart-item-actions">
                             <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${maxStock}"
-                                   onchange="updateQuantity(${item.id}, parseInt(this.value))">
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                            <input type="number" class="quantity-input" 
+                                   value="${item.quantity}" 
+                                   min="1" 
+                                   max="${maxStock}"
+                                   onchange="handleQuantityInput(${item.id}, this.value)">
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})"
+                                    ${isMaxReached ? 'disabled' : ''}>+</button>
                             <button class="remove-btn" onclick="removeFromCart(${item.id})">×</button>
                         </div>
-                    </div>`;
-                }).join('');
+                    </div>
+                `}).join('');
             }
             
-            const total = cart.reduce((s, i) => s + i.quantity, 0);
-            document.getElementById('cartPanelCount').textContent = `${total} бр.`;
-            document.getElementById('cartTotal').textContent = `Общо: ${total} бр.`;
-            document.getElementById('cartCount').textContent = total;
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartPanelCount.textContent = `${totalItems} бр.`;
+            cartTotal.textContent = `Общо: ${totalItems} бр.`;
+            cartCount.textContent = totalItems;
+            
+            const modal = document.getElementById('cartModal');
+            if (modal && modal.classList.contains('active')) {
+                showCartModal();
+            }
         }
         
         function clearCart() {
-            if (confirm('Изчистване на количката?')) {
+            if (confirm('Сигурни ли сте, че искате да изчистите количката?')) {
                 cart = [];
                 updateCartDisplay();
                 saveCartToLocalStorage();
                 renderProducts();
+                showNotification('🗑️ Количката е изчистена');
             }
         }
         
-        function saveCartToLocalStorage() { localStorage.setItem('cart', JSON.stringify(cart)); }
-        function loadCartFromLocalStorage() {
-            const saved = localStorage.getItem('cart');
-            if (saved) { cart = JSON.parse(saved); updateCartDisplay(); }
+        function saveCartToLocalStorage() {
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
         
+        function loadCartFromLocalStorage() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartDisplay();
+            }
+        }
+        
+        function saveOrder() {
+            if (cart.length === 0) {
+                showNotification('Количката е празна!');
+                return;
+            }
+            
+            const order = {
+                id: Date.now(),
+                date: new Date().toLocaleString('bg-BG'),
+                items: [...cart],
+                total: cart.reduce((sum, item) => sum + item.quantity, 0)
+            };
+            
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            showNotification('✅ Заявката е запазена в историята');
+        }
+        
+        // ==================== МОДАЛНИ ПРОЗОРЦИ ====================
+        function showCartModal() {
+            const modal = document.getElementById('cartModal');
+            const modalCartItems = document.getElementById('modalCartItems');
+            const modalCartTotal = document.getElementById('modalCartTotal');
+            
+            if (cart.length === 0) {
+                modalCartItems.innerHTML = '<div style="text-align: center; padding: 20px;">Количката е празна</div>';
+            } else {
+                modalCartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <h4>${escapeHtml(item.brand)} - ${escapeHtml(item.model)}</h4>
+                            <p>Код: ${escapeHtml(item.code)} | Група: ${escapeHtml(item.group)}</p>
+                        </div>
+                        <div style="font-weight: bold;">Количество: ${item.quantity}</div>
+                    </div>
+                `).join('');
+            }
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            modalCartTotal.textContent = `Общо: ${totalItems} бр.`;
+            modal.classList.add('active');
+        }
+        
+        function closeCartModal() {
+            document.getElementById('cartModal').classList.remove('active');
+        }
+        
+        function showHistoryModal() {
+            const modal = document.getElementById('historyModal');
+            const historyList = document.getElementById('historyList');
+            
+            if (orders.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; padding: 20px;">Няма запазени заявки</div>';
+            } else {
+                historyList.innerHTML = orders.slice().reverse().map(order => `
+                    <div class="history-item" style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:10px;cursor:pointer;" onclick="loadOrder(${order.id})">
+                        <div style="color:#667eea;font-weight:bold;">📅 ${order.date}</div>
+                        <div style="display:flex;justify-content:space-between;color:#666;">
+                            <span>${order.items.length} артикула</span>
+                            <span>${order.total} броя общо</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+        
+        function loadOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                cart = order.items.map(item => ({...item}));
+                updateCartDisplay();
+                saveCartToLocalStorage();
+                renderProducts();
+                closeHistoryModal();
+                showNotification('✅ Заявката е заредена');
+            }
+        }
+        
+        // ==================== ЕКСПОРТ ====================
         function printCart() {
-            if (cart.length === 0) return alert('Количката е празна');
-            const win = window.open('', '_blank');
-            win.document.write(`
-                <html><head><title>АВТОЗОНА 33 - Заявка</title>
-                <style>body{font-family:Arial;padding:20px}th{background:#667eea;color:white}</style></head>
-                <body><h1>АВТОЗОНА 33 - Заявка</h1>
-                <p>Дата: ${new Date().toLocaleString('bg-BG')}</p>
-                <table border="1" cellpadding="10" width="100%">
-                    <tr><th>Марка</th><th>Модел</th><th>Код</th><th>Количество</th></tr>
-                    ${cart.map(i => `<tr><td>${i.brand}</td><td>${i.model}</td><td>${i.code}</td><td>${i.quantity}</td></tr>`).join('')}
-                </table>
-                <p><strong>Общо: ${cart.reduce((s,i)=>s+i.quantity,0)} бр.</strong></p>
-                </body></html>
+            if (cart.length === 0) {
+                alert('Количката е празна!');
+                return;
+            }
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>АВТОЗОНА 33 - Заявка</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            h1 { color: #667eea; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            th { background: #667eea; color: white; padding: 10px; text-align: left; }
+                            td { padding: 10px; border-bottom: 1px solid #ddd; }
+                            .total { font-size: 18px; font-weight: bold; margin-top: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>АВТОЗОНА 33 - Заявка</h1>
+                        <p>Дата: ${new Date().toLocaleString('bg-BG')}</p>
+                        <table>
+                            <tr>
+                                <th>Марка</th>
+                                <th>Модел</th>
+                                <th>Код</th>
+                                <th>Група</th>
+                                <th>Количество</th>
+                            </tr>
+                            ${cart.map(item => `
+                                <tr>
+                                    <td>${escapeHtml(item.brand)}</td>
+                                    <td>${escapeHtml(item.model)}</td>
+                                    <td>${escapeHtml(item.code)}</td>
+                                    <td>${escapeHtml(item.group)}</td>
+                                    <td>${item.quantity}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                        <div class="total">
+                            Общо артикули: ${cart.reduce((sum, item) => sum + item.quantity, 0)} бр.
+                        </div>
+                    </body>
+                </html>
             `);
-            win.document.close();
-            win.print();
+            printWindow.document.close();
+            printWindow.print();
             saveOrder();
         }
         
         function exportCart() {
-            if (cart.length === 0) return alert('Количката е празна');
-            let csv = 'Марка,Модел,Код,Група,Количество\n';
-            cart.forEach(i => csv += `"${i.brand}","${i.model}","${i.code}","${i.group}",${i.quantity}\n`);
-            const blob = new Blob([csv], { type: 'text/csv' });
+            if (cart.length === 0) {
+                alert('Количката е празна!');
+                return;
+            }
+            
+            let csv = '\uFEFFМарка,Модел,Код,Група,Количество\n';
+            
+            cart.forEach(item => {
+                csv += `"${item.brand}","${item.model}","${item.code}","${item.group}",${item.quantity}\n`;
+            });
+            
+            csv += `,,,Общо,${cart.reduce((sum, item) => sum + item.quantity, 0)}\n`;
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `avtozona33_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
+            showNotification('📊 Файлът е изтеглен');
         }
         
         function emailCart() {
-            if (cart.length === 0) return alert('Количката е празна');
-            let body = 'Заявка от АВТОЗОНА 33:\n\n';
-            cart.forEach(i => body += `${i.brand} ${i.model} (${i.code}) - ${i.quantity} бр.\n`);
-            body += `\nОбщо: ${cart.reduce((s,i)=>s+i.quantity,0)} бр.`;
-            window.location.href = `mailto:?subject=Заявка АВТОЗОНА 33&body=${encodeURIComponent(body)}`;
+            if (cart.length === 0) {
+                alert('Количката е празна!');
+                return;
+            }
+            
+            let body = 'Заявка за АВТОЗОНА 33\n\n';
+            cart.forEach(item => {
+                body += `${item.brand} - ${item.model} (${item.code}) - ${item.quantity} бр.\n`;
+            });
+            body += `\nОбщо: ${cart.reduce((sum, item) => sum + item.quantity, 0)} бр.`;
+            
+            window.location.href = `mailto:?subject=Заявка за АВТОЗОНА 33&body=${encodeURIComponent(body)}`;
         }
         
         function viberCart() {
-            if (cart.length === 0) return alert('Количката е празна');
-            let text = 'Заявка от АВТОЗОНА 33:\n';
-            cart.forEach(i => text += `• ${i.brand} ${i.model} (${i.code}) - ${i.quantity} бр.\n`);
-            text += `\nОбщо: ${cart.reduce((s,i)=>s+i.quantity,0)} бр.`;
+            if (cart.length === 0) {
+                alert('Количката е празна!');
+                return;
+            }
+            
+            let text = 'Заявка от АВТОЗОНА 33:\n\n';
+            cart.forEach(item => {
+                text += `• ${item.brand} - ${item.model} (${item.code}) - ${item.quantity} бр.\n`;
+            });
+            text += `\nОбщо: ${cart.reduce((sum, item) => sum + item.quantity, 0)} бр.`;
+            
             window.open(`viber://forward?text=${encodeURIComponent(text)}`);
         }
         
-        function saveOrder() {
-            if (cart.length === 0) return;
-            const order = { id: Date.now(), date: new Date().toLocaleString('bg-BG'), items: [...cart], total: cart.reduce((s,i)=>s+i.quantity,0) };
-            orders.push(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
-            showNotification('✅ Заявката е запазена');
-        }
-        
-        function showCartModal() {
-            const modal = document.getElementById('cartModal');
-            const modalItems = document.getElementById('modalCartItems');
-            if (!modalItems) return;
-            if (cart.length === 0) modalItems.innerHTML = '<div style="padding:20px">Количката е празна</div>';
-            else {
-                modalItems.innerHTML = cart.map(i => `<div class="cart-item"><div><b>${i.brand} ${i.model}</b><br><small>${i.code}</small></div><div>${i.quantity} бр.</div></div>`).join('');
-                document.getElementById('modalCartTotal').textContent = `Общо: ${cart.reduce((s,i)=>s+i.quantity,0)} бр.`;
-            }
-            modal.classList.add('active');
-        }
-        
-        function closeCartModal() { document.getElementById('cartModal')?.classList.remove('active'); }
-        function showHistoryModal() { /* implement if needed */ }
-        function closeHistoryModal() { /* implement */ }
-        
+        // ==================== ПОМОЩНИ ФУНКЦИИ ====================
         function showLoading(show) {
-            document.getElementById('loadingSpinner').classList.toggle('active', show);
-            document.getElementById('productsGrid').style.display = show ? 'none' : 'grid';
+            const spinner = document.getElementById('loadingSpinner');
+            const grid = document.getElementById('productsGrid');
+            
+            if (show) {
+                spinner.classList.add('active');
+                grid.style.display = 'none';
+            } else {
+                spinner.classList.remove('active');
+                grid.style.display = 'grid';
+            }
         }
         
-        function updateStatus(msg) {
+        function updateStatus(message) {
             const badge = document.getElementById('statusBadge');
-            badge.innerHTML = msg;
-            if (msg.includes('✓')) badge.style.background = '#4CAF50';
-            else if (msg.includes('⚠')) badge.style.background = '#ff9800';
-            else badge.style.background = '#667eea';
+            badge.innerHTML = message;
+            
+            if (message.includes('✓')) {
+                badge.style.background = '#4CAF50';
+            } else if (message.includes('⚠')) {
+                badge.style.background = '#ff9800';
+            } else {
+                badge.style.background = '#667eea';
+            }
         }
         
-        function showNotification(msg) {
+        function showNotification(message) {
             const notif = document.createElement('div');
             notif.className = 'notification';
-            notif.textContent = msg;
+            notif.textContent = message;
             document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 2500);
+            setTimeout(() => {
+                notif.remove();
+            }, 2500);
         }
         
-        function toggleLogin() { alert('Функцията за вход е в разработка'); }
+        function toggleLogin() {
+            alert('Функцията за вход е в разработка');
+        }
         
-        // Горещи клавиши
+        // ==================== ГОРЕЩИ КЛАВИШИ ====================
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
@@ -1486,44 +1812,23 @@
             }
         });
         
-        // Инициализация
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         document.addEventListener('DOMContentLoaded', function() {
             loadCartFromLocalStorage();
             loadProductsFromGoogleSheets();
-            document.getElementById('quickCodeInput').focus();
+            
+            window.onclick = function(event) {
+                const cartModal = document.getElementById('cartModal');
+                const historyModal = document.getElementById('historyModal');
+                
+                if (event.target === cartModal) {
+                    closeCartModal();
+                }
+                if (event.target === historyModal) {
+                    closeHistoryModal();
+                }
+            };
         });
     </script>
-    
-    <!-- Допълнителни модални структури -->
-    <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <div class="modal-header"><h2>📋 ЗАЯВКА</h2><button class="modal-close" onclick="closeCartModal()">&times;</button></div>
-            <div id="modalCartItems"></div>
-            <div class="cart-footer"><div id="modalCartTotal"></div></div>
-        </div>
-    </div>
-    <div class="modal" id="historyModal"><div class="modal-content"><h2>История</h2><div id="historyList"></div></div></div>
-    
-    <style>
-        @keyframes shake {
-            0%,100%{transform:translateX(0)}
-            25%{transform:translateX(-5px)}
-            75%{transform:translateX(5px)}
-        }
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360)} }
-        .loading { text-align: center; padding: 50px; display: none; }
-        .loading.active { display: block; }
-        .stats-bar { background: #f0f4ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 20px; }
-        .stats-item { display: flex; gap: 8px; }
-    </style>
 </body>
 </html>
