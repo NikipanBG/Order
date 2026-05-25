@@ -805,6 +805,341 @@
                 align-items: stretch;
             }
         }
+
+        /* ==================== NEW: THEME TOGGLE & ICON BUTTONS ==================== */
+        .icon-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ==================== NEW: LIST VIEW ==================== */
+        .products-grid.list-view {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .products-grid.list-view .product-card {
+            display: grid;
+            grid-template-columns: minmax(120px, 1fr) 2fr auto auto auto;
+            gap: 16px;
+            align-items: center;
+            padding: 12px 20px;
+        }
+        .products-grid.list-view .product-brand {
+            margin-bottom: 0;
+        }
+        .products-grid.list-view .product-name {
+            font-size: 15px;
+            margin-bottom: 0;
+            padding-right: 0;
+        }
+        .products-grid.list-view .product-code {
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        .products-grid.list-view .product-group {
+            display: none;
+        }
+        .products-grid.list-view .product-stock {
+            position: static;
+        }
+        .products-grid.list-view .product-footer {
+            margin-top: 0;
+        }
+        .products-grid.list-view .product-card:hover {
+            transform: none;
+        }
+        .view-toggle-btn {
+            padding: 10px 16px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .view-toggle-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .clear-filters-btn {
+            padding: 10px 16px;
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            background: white;
+            color: #ff4444;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .clear-filters-btn:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        /* ==================== NEW: AUTOCOMPLETE ==================== */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            max-height: 280px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        .autocomplete-dropdown.active {
+            display: block;
+        }
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover,
+        .autocomplete-item.highlighted {
+            background: #f0f4ff;
+        }
+        .autocomplete-code {
+            font-family: monospace;
+            color: #667eea;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .autocomplete-name {
+            flex: 1;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .autocomplete-stock {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .autocomplete-stock.zero {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* ==================== NEW: HISTORY SEARCH/FILTERS ==================== */
+        .history-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .history-controls input,
+        .history-controls select {
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .history-search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        .history-item {
+            position: relative;
+        }
+        .history-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .history-action-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .history-action-btn.duplicate {
+            background: #667eea;
+            color: white;
+        }
+        .history-action-btn.duplicate:hover {
+            background: #5568d3;
+        }
+        .history-action-btn.delete {
+            background: #f0f0f0;
+            color: #c62828;
+        }
+        .history-action-btn.delete:hover {
+            background: #ffebee;
+        }
+
+        /* ==================== NEW: UNDO TOAST ==================== */
+        .undo-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 50px;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        .undo-toast button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .undo-toast button:hover {
+            background: #5568d3;
+        }
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to   { transform: translate(-50%, 0);    opacity: 1; }
+        }
+
+        /* ==================== NEW: DARK THEME ==================== */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        [data-theme="dark"] .container {
+            background: #1e1e2e;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+        [data-theme="dark"] .quick-add-section {
+            background: linear-gradient(135deg, #252538 0%, #2a2a40 100%);
+            border-color: #667eea40;
+        }
+        [data-theme="dark"] .code-input-group input,
+        [data-theme="dark"] .quantity-add-group input,
+        [data-theme="dark"] .search-box input,
+        [data-theme="dark"] .filter-select,
+        [data-theme="dark"] .batch-textarea,
+        [data-theme="dark"] .history-controls input,
+        [data-theme="dark"] .history-controls select,
+        [data-theme="dark"] .quantity-input {
+            background: #2a2a40;
+            border-color: #3a3a55;
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .filters,
+        [data-theme="dark"] .stats-bar,
+        [data-theme="dark"] .frequent-products,
+        [data-theme="dark"] .cart-panel {
+            background: #252538;
+        }
+        [data-theme="dark"] .filter-group label,
+        [data-theme="dark"] .stats-label,
+        [data-theme="dark"] .cart-title {
+            color: #b8b8c8;
+        }
+        [data-theme="dark"] .product-card,
+        [data-theme="dark"] .cart-item,
+        [data-theme="dark"] .frequent-tag,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .autocomplete-dropdown,
+        [data-theme="dark"] .hide-zero-btn,
+        [data-theme="dark"] .view-toggle-btn,
+        [data-theme="dark"] .clear-filters-btn {
+            background: #2a2a40;
+            border-color: #3a3a55;
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .product-card.selected {
+            background: #2f3050;
+            border-color: #667eea;
+        }
+        [data-theme="dark"] .product-card.out-of-stock {
+            background: #1f1f30;
+        }
+        [data-theme="dark"] .product-name,
+        [data-theme="dark"] .cart-item-info h4,
+        [data-theme="dark"] .modal-header h2 {
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .product-group,
+        [data-theme="dark"] .product-code,
+        [data-theme="dark"] .cart-item-info p {
+            color: #9e9eb0;
+        }
+        [data-theme="dark"] .tool-btn.secondary {
+            background: #3a3a55;
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .tool-btn.secondary:hover {
+            background: #45456a;
+        }
+        [data-theme="dark"] .quantity-btn {
+            background: #3a3a55;
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .cart-footer {
+            border-top-color: #3a3a55;
+        }
+        [data-theme="dark"] .modal {
+            background: rgba(0,0,0,0.75);
+        }
+        [data-theme="dark"] .history-item {
+            background: #2a2a40 !important;
+        }
+        [data-theme="dark"] .autocomplete-item {
+            border-bottom-color: #3a3a55;
+        }
+        [data-theme="dark"] .autocomplete-item:hover,
+        [data-theme="dark"] .autocomplete-item.highlighted {
+            background: #2f3050;
+        }
+        [data-theme="dark"] .autocomplete-name {
+            color: #e8e8f0;
+        }
+        [data-theme="dark"] .batch-add-area {
+            border-top-color: #3a3a55;
+        }
     </style>
 </head>
 <body>
@@ -814,7 +1149,10 @@
             <div class="shortcuts-hint">
                 <kbd>Ctrl</kbd>+<kbd>K</kbd> търсене | <kbd>Ctrl</kbd>+<kbd>B</kbd> код
             </div>
-            <button class="login-btn" onclick="toggleLogin()">👤 ВЛИЗАНЕ</button>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Смени темата">🌙</button>
+                <button class="login-btn" onclick="toggleLogin()">👤 ВЛИЗАНЕ</button>
+            </div>
         </div>
         
         <div class="main-content">
@@ -827,6 +1165,7 @@
                     <div class="code-input-group">
                         <input type="text" id="quickCodeInput" placeholder="Въведете или сканирайте код на продукт..." autocomplete="off">
                         <span class="barcode-icon">📷</span>
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
                     </div>
                     <div class="quantity-add-group">
                         <input type="number" id="quickQuantity" value="1" min="1" max="999" placeholder="Брой">
@@ -881,6 +1220,12 @@
                 </div>
                 <button class="hide-zero-btn" id="hideZeroBtn" onclick="toggleHideZero()">
                     <span>👁️</span> Скрий нулевите
+                </button>
+                <button class="view-toggle-btn" id="viewToggleBtn" onclick="toggleView()" title="Смени изгледа">
+                    <span id="viewToggleIcon">☰</span> <span id="viewToggleText">Списък</span>
+                </button>
+                <button class="clear-filters-btn" onclick="clearAllFilters()" title="Изчисти всички филтри">
+                    ✖ Изчисти филтри
                 </button>
                 <div class="selected-count" id="selectedCount">
                     0 избрани
@@ -968,6 +1313,22 @@
                 <h2>📜 История на заявките</h2>
                 <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
             </div>
+            <div class="history-controls">
+                <input type="text" class="history-search-input" id="historySearch" 
+                       placeholder="🔍 Търсене в историята (марка, модел, код)..." 
+                       oninput="renderHistory()">
+                <select id="historyDateFilter" onchange="renderHistory()">
+                    <option value="all">Всички дати</option>
+                    <option value="today">Днес</option>
+                    <option value="week">Последна седмица</option>
+                    <option value="month">Последен месец</option>
+                </select>
+                <select id="historySortOrder" onchange="renderHistory()">
+                    <option value="newest">Най-нови</option>
+                    <option value="oldest">Най-стари</option>
+                    <option value="largest">Най-големи заявки</option>
+                </select>
+            </div>
             <div class="history-list" id="historyList"></div>
         </div>
     </div>
@@ -985,6 +1346,13 @@
         let hideZeroStock = false;
         let searchTerm = '';
         let orderFrequency = JSON.parse(localStorage.getItem('orderFrequency') || '{}');
+        // НОВИ:
+        let viewMode = localStorage.getItem('viewMode') || 'grid';  // 'grid' или 'list'
+        let lastClearedCart = null;
+        let undoTimer = null;
+        let autocompleteIndex = -1;
+        let renderedCount = 0;  // за lazy rendering
+        const RENDER_BATCH = 60;
         
         // ==================== ДОБАВЯНЕ ПО КОД ====================
         function addProductByCode() {
@@ -1366,23 +1734,15 @@
         }
         
         // ==================== РЕНДЕРИРАНЕ ====================
-        function renderProducts() {
-            const grid = document.getElementById('productsGrid');
-            
-            if (filteredProducts.length === 0) {
-                grid.innerHTML = '<div class="no-products">🔍 Няма намерени продукти</div>';
-                return;
-            }
-            
-            grid.innerHTML = filteredProducts.map(product => {
-                const inCart = cart.find(item => item.id === product.id);
-                const currentQuantity = inCart ? inCart.quantity : 0;
-                const maxStock = product.stock > 9 ? 999 : product.stock;
-                const isOutOfStock = product.stock === 0;
-                const isMaxReached = currentQuantity >= maxStock;
-                const isSelected = selectedProducts.has(product.id);
-                
-                return `
+        function buildProductCardHtml(product) {
+            const inCart = cart.find(item => item.id === product.id);
+            const currentQuantity = inCart ? inCart.quantity : 0;
+            const maxStock = product.stock > 9 ? 999 : product.stock;
+            const isOutOfStock = product.stock === 0;
+            const isMaxReached = currentQuantity >= maxStock;
+            const isSelected = selectedProducts.has(product.id);
+
+            return `
                 <div class="product-card ${isSelected ? 'selected' : ''} ${isOutOfStock ? 'out-of-stock' : ''}" 
                      onclick="toggleProductSelection(${product.id})">
                     <div class="product-brand">${escapeHtml(product.brand)}</div>
@@ -1400,8 +1760,24 @@
                         </button>
                     </div>
                 </div>
-            `}).join('');
-            
+            `;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = '<div class="no-products">🔍 Няма намерени продукти</div>';
+                renderedCount = 0;
+                updateSelectedCount();
+                return;
+            }
+
+            // Lazy rendering: рендирай първите RENDER_BATCH, останалите при скрол
+            const initial = filteredProducts.slice(0, RENDER_BATCH);
+            grid.innerHTML = initial.map(buildProductCardHtml).join('');
+            renderedCount = initial.length;
+
             updateSelectedCount();
         }
         
@@ -1548,13 +1924,54 @@
         }
         
         function clearCart() {
-            if (confirm('Сигурни ли сте, че искате да изчистите количката?')) {
-                cart = [];
+            if (cart.length === 0) {
+                showNotification('Количката вече е празна');
+                return;
+            }
+            // Запазваме за undo
+            lastClearedCart = JSON.parse(JSON.stringify(cart));
+            cart = [];
+            updateCartDisplay();
+            saveCartToLocalStorage();
+            renderProducts();
+            showUndoToast();
+        }
+
+        function showUndoToast() {
+            // Премахни стар toast ако има
+            const existing = document.getElementById('undoToast');
+            if (existing) existing.remove();
+            if (undoTimer) clearTimeout(undoTimer);
+
+            const toast = document.createElement('div');
+            toast.id = 'undoToast';
+            toast.className = 'undo-toast';
+            toast.innerHTML = `
+                <span>🗑️ Количката е изчистена</span>
+                <button onclick="undoClearCart()">↶ Възстанови</button>
+            `;
+            document.body.appendChild(toast);
+
+            undoTimer = setTimeout(() => {
+                if (document.getElementById('undoToast')) {
+                    document.getElementById('undoToast').remove();
+                }
+                lastClearedCart = null;
+            }, 10000);
+        }
+
+        function undoClearCart() {
+            if (lastClearedCart) {
+                cart = lastClearedCart;
+                lastClearedCart = null;
                 updateCartDisplay();
                 saveCartToLocalStorage();
                 renderProducts();
-                showNotification('🗑️ Количката е изчистена');
+                showNotification('↶ Количката е възстановена');
             }
+            const toast = document.getElementById('undoToast');
+            if (toast) toast.remove();
+            if (undoTimer) clearTimeout(undoTimer);
         }
         
         function saveCartToLocalStorage() {
@@ -1617,24 +2034,84 @@
         }
         
         function showHistoryModal() {
-            const modal = document.getElementById('historyModal');
+            document.getElementById('historyModal').classList.add('active');
+            renderHistory();
+        }
+
+        function renderHistory() {
             const historyList = document.getElementById('historyList');
-            
-            if (orders.length === 0) {
-                historyList.innerHTML = '<div style="text-align: center; padding: 20px;">Няма запазени заявки</div>';
-            } else {
-                historyList.innerHTML = orders.slice().reverse().map(order => `
-                    <div class="history-item" style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:10px;cursor:pointer;" onclick="loadOrder(${order.id})">
-                        <div style="color:#667eea;font-weight:bold;">📅 ${order.date}</div>
-                        <div style="display:flex;justify-content:space-between;color:#666;">
-                            <span>${order.items.length} артикула</span>
-                            <span>${order.total} броя общо</span>
-                        </div>
-                    </div>
-                `).join('');
+            const searchEl = document.getElementById('historySearch');
+            const dateEl = document.getElementById('historyDateFilter');
+            const sortEl = document.getElementById('historySortOrder');
+            const query = (searchEl ? searchEl.value : '').toLowerCase().trim();
+            const dateFilter = dateEl ? dateEl.value : 'all';
+            const sortOrder = sortEl ? sortEl.value : 'newest';
+
+            let filtered = orders.slice();
+
+            // Дата филтър
+            if (dateFilter !== 'all') {
+                const now = Date.now();
+                const cutoffs = {
+                    today: 24 * 3600 * 1000,
+                    week: 7 * 24 * 3600 * 1000,
+                    month: 30 * 24 * 3600 * 1000
+                };
+                const cutoff = cutoffs[dateFilter];
+                filtered = filtered.filter(o => (now - o.id) <= cutoff);
             }
-            
-            modal.classList.add('active');
+
+            // Търсене
+            if (query) {
+                filtered = filtered.filter(o =>
+                    o.items.some(item =>
+                        (item.brand || '').toLowerCase().includes(query) ||
+                        (item.model || '').toLowerCase().includes(query) ||
+                        (item.code || '').toLowerCase().includes(query)
+                    )
+                );
+            }
+
+            // Сортиране
+            if (sortOrder === 'newest') filtered.sort((a, b) => b.id - a.id);
+            else if (sortOrder === 'oldest') filtered.sort((a, b) => a.id - b.id);
+            else if (sortOrder === 'largest') filtered.sort((a, b) => b.total - a.total);
+
+            if (filtered.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; padding: 20px; color:#888;">' +
+                    (orders.length === 0 ? 'Няма запазени заявки' : 'Няма заявки, които да отговарят на филтъра') + '</div>';
+                return;
+            }
+
+            historyList.innerHTML = filtered.map(order => `
+                <div class="history-item" style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:10px;">
+                    <div style="color:#667eea;font-weight:bold;">📅 ${order.date}</div>
+                    <div style="display:flex;justify-content:space-between;color:#666;margin-top:4px;">
+                        <span>${order.items.length} артикула</span>
+                        <span>${order.total} броя общо</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:6px;">
+                        ${order.items.slice(0, 3).map(i => escapeHtml(i.brand + ' ' + i.model)).join(' • ')}
+                        ${order.items.length > 3 ? ' • ...' : ''}
+                    </div>
+                    <div class="history-item-actions">
+                        <button class="history-action-btn duplicate" onclick="loadOrder(${order.id})">
+                            📋 Дублирай в количка
+                        </button>
+                        <button class="history-action-btn delete" onclick="deleteOrder(${order.id})">
+                            🗑️ Изтрий
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteOrder(orderId) {
+            if (!confirm('Да изтрия ли тази заявка от историята?')) return;
+            orders = orders.filter(o => o.id !== orderId);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            renderHistory();
+            showNotification('🗑️ Заявката е изтрита');
         }
         
         function closeHistoryModal() {
@@ -1798,29 +2275,209 @@
         function toggleLogin() {
             alert('Функцията за вход е в разработка');
         }
+
+        // ==================== НОВИ ФУНКЦИИ ====================
+
+        // ---------- Тъмна / светла тема ----------
+        function loadTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            applyTheme(saved);
+        }
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const btn = document.getElementById('themeToggle');
+            if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', theme);
+        }
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        // ---------- Grid / List изглед ----------
+        function applyView(mode) {
+            viewMode = mode;
+            localStorage.setItem('viewMode', mode);
+            const grid = document.getElementById('productsGrid');
+            const icon = document.getElementById('viewToggleIcon');
+            const text = document.getElementById('viewToggleText');
+            if (mode === 'list') {
+                grid.classList.add('list-view');
+                if (icon) icon.textContent = '▦';
+                if (text) text.textContent = 'Карти';
+            } else {
+                grid.classList.remove('list-view');
+                if (icon) icon.textContent = '☰';
+                if (text) text.textContent = 'Списък';
+            }
+        }
+        function toggleView() {
+            applyView(viewMode === 'grid' ? 'list' : 'grid');
+        }
+
+        // ---------- Изчисти всички филтри ----------
+        function clearAllFilters() {
+            document.getElementById('groupFilter').value = 'all';
+            document.getElementById('brandFilter').value = 'all';
+            document.getElementById('searchInput').value = '';
+            searchTerm = '';
+            if (hideZeroStock) {
+                hideZeroStock = false;
+                const btn = document.getElementById('hideZeroBtn');
+                btn.classList.remove('active');
+                btn.innerHTML = '<span>👁️</span> Скрий нулевите';
+            }
+            selectedProducts.clear();
+            filterProducts();
+            showNotification('✖ Филтрите са изчистени');
+        }
+
+        // ---------- Autocomplete за код ----------
+        function handleCodeAutocomplete() {
+            const input = document.getElementById('quickCodeInput');
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const query = input.value.trim().toLowerCase();
+            autocompleteIndex = -1;
+
+            if (!query || query.length < 1 || allProducts.length === 0) {
+                dropdown.classList.remove('active');
+                dropdown.innerHTML = '';
+                return;
+            }
+
+            // Намери до 8 продукта, чийто код или модел съдържа заявката
+            const matches = allProducts.filter(p => {
+                const code = (p.code || '').toString().toLowerCase();
+                const model = (p.model || '').toLowerCase();
+                const brand = (p.brand || '').toLowerCase();
+                return code.includes(query) || model.includes(query) || brand.includes(query);
+            }).slice(0, 8);
+
+            if (matches.length === 0) {
+                dropdown.classList.remove('active');
+                dropdown.innerHTML = '';
+                return;
+            }
+
+            dropdown.innerHTML = matches.map((p, i) => `
+                <div class="autocomplete-item" data-index="${i}" data-code="${escapeHtml(p.code)}"
+                     onclick="selectAutocomplete('${escapeHtml(p.code).replace(/'/g, "\\'")}'); event.stopPropagation();">
+                    <span class="autocomplete-code">${escapeHtml(p.code)}</span>
+                    <span class="autocomplete-name">${escapeHtml(p.brand)} — ${escapeHtml(p.model)}</span>
+                    <span class="autocomplete-stock ${p.stock === 0 ? 'zero' : ''}">${formatStock(p.stock)}</span>
+                </div>
+            `).join('');
+            dropdown.classList.add('active');
+        }
+
+        function selectAutocomplete(code) {
+            const input = document.getElementById('quickCodeInput');
+            input.value = code;
+            document.getElementById('autocompleteDropdown').classList.remove('active');
+            addProductByCode();
+        }
+
+        function navigateAutocomplete(direction) {
+            const items = document.querySelectorAll('.autocomplete-item');
+            if (items.length === 0) return;
+            items.forEach(it => it.classList.remove('highlighted'));
+            autocompleteIndex += direction;
+            if (autocompleteIndex < 0) autocompleteIndex = items.length - 1;
+            if (autocompleteIndex >= items.length) autocompleteIndex = 0;
+            items[autocompleteIndex].classList.add('highlighted');
+            items[autocompleteIndex].scrollIntoView({ block: 'nearest' });
+        }
+
+        function confirmAutocomplete() {
+            const items = document.querySelectorAll('.autocomplete-item');
+            if (autocompleteIndex >= 0 && items[autocompleteIndex]) {
+                const code = items[autocompleteIndex].getAttribute('data-code');
+                selectAutocomplete(code);
+                return true;
+            }
+            return false;
+        }
+
+        // ---------- Lazy rendering: дозареждане при скрол ----------
+        function setupLazyScroll() {
+            const grid = document.getElementById('productsGrid');
+            grid.addEventListener('scroll', () => {
+                if (renderedCount >= filteredProducts.length) return;
+                const nearBottom = grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 200;
+                if (nearBottom) {
+                    renderMoreProducts();
+                }
+            });
+        }
+
+        function renderMoreProducts() {
+            const grid = document.getElementById('productsGrid');
+            const next = filteredProducts.slice(renderedCount, renderedCount + RENDER_BATCH);
+            if (next.length === 0) return;
+            const html = next.map(buildProductCardHtml).join('');
+            grid.insertAdjacentHTML('beforeend', html);
+            renderedCount += next.length;
+        }
         
         // ==================== ГОРЕЩИ КЛАВИШИ ====================
         document.addEventListener('keydown', function(e) {
+            const codeInput = document.getElementById('quickCodeInput');
+            const dropdown = document.getElementById('autocompleteDropdown');
+            const isAutocompleteOpen = dropdown && dropdown.classList.contains('active');
+
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
                 document.getElementById('searchInput').focus();
             } else if (e.ctrlKey && e.key === 'b') {
                 e.preventDefault();
-                document.getElementById('quickCodeInput').focus();
-            } else if (e.key === 'Enter' && document.activeElement === document.getElementById('quickCodeInput')) {
+                codeInput.focus();
+            } else if (document.activeElement === codeInput && isAutocompleteOpen) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    navigateAutocomplete(1);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    navigateAutocomplete(-1);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!confirmAutocomplete()) {
+                        addProductByCode();
+                    }
+                } else if (e.key === 'Escape') {
+                    dropdown.classList.remove('active');
+                }
+            } else if (e.key === 'Enter' && document.activeElement === codeInput) {
                 addProductByCode();
             }
         });
         
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            applyView(viewMode);
+            setupLazyScroll();
+
+            // Autocomplete listener
+            const codeInput = document.getElementById('quickCodeInput');
+            codeInput.addEventListener('input', handleCodeAutocomplete);
+            codeInput.addEventListener('focus', handleCodeAutocomplete);
+
+            // Затваряй autocomplete при клик навън
+            document.addEventListener('click', function(e) {
+                const dropdown = document.getElementById('autocompleteDropdown');
+                const group = codeInput.closest('.code-input-group');
+                if (dropdown && group && !group.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
             loadCartFromLocalStorage();
             loadProductsFromGoogleSheets();
-            
+
             window.onclick = function(event) {
                 const cartModal = document.getElementById('cartModal');
                 const historyModal = document.getElementById('historyModal');
-                
+
                 if (event.target === cartModal) {
                     closeCartModal();
                 }
