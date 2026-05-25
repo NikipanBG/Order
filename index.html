@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Автозона 33 - Система за пратки</title>
+    <style>
+        :root { 
+            --primary: #2ea44f; 
+            --viber: #7360f2; 
+            --email: #007bff; 
+            --danger: #d73a49; 
+            --dark: #1a1d21;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .brand { font-size: 24px; font-weight: 800; color: var(--dark); }
+        .admin-panel { display: grid; grid-template-columns: 1.5fr 1.2fr 1.2fr 1fr auto; gap: 12px; margin-bottom: 25px; background: #fafafa; padding: 20px; border-radius: 12px; border: 1px solid #eee; }
+        input, select, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; font-family: inherit; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 164, 79, 0.1); }
+        .btn-add { background: var(--dark); color: white; font-weight: bold; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-add:hover { background: #000; transform: translateY(-1px); }
+        .btn-export { background: #6e7681; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-export:hover { background: #5a6268; }
+        .order-card { background: #fff; border: 1px solid #e1e4e8; padding: 18px; margin-bottom: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: flex-start; border-left: 6px solid #ccc; transition: all 0.2s; position: relative; }
+        .order-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateX(2px); }
+        .status-travel { border-left-color: var(--email); }
+        .status-done { border-left-color: var(--success); }
+        .status-issue { border-left-color: var(--danger); }
+        .order-info { flex: 1; min-width: 0; }
+        .order-info strong { display: block; font-size: 18px; margin-bottom: 4px; }
+        .order-info span { display: block; color: #666; font-size: 14px; margin-top: 4px; }
+        .copy-badge { cursor: pointer; background: #f0f7ff; color: #0056b3; padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: 600; border: 1px solid #cce3ff; display: inline-block; margin-top: 6px; transition: all 0.2s; }
+        .copy-badge:hover { background: #e1f0ff; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .btn-action { padding: 10px 14px; font-size: 13px; border-radius: 8px; color: white; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+        .btn-action:hover { transform: translateY(-1px); opacity: 0.9; }
+        .btn-check { background: var(--info); }
+        .btn-copy-text { background: #6f42c1; }
+        .btn-status-travel { background: #f8f9fa; color: #444; border: 1px solid #ddd; }
+        .btn-status-done { background: var(--success); color: white; }
+        .btn-status-issue { background: var(--danger); color: white; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--dark); color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 1000; opacity: 0; transform: translateY(20px); transition: all 0.3s; font-weight: 500; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.info { background: var(--info); }
+        
+        .stats { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-box { background: #f8f9fa; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #666; border: 1px solid #eee; }
+        .stat-box span { color: var(--dark); font-size: 18px; margin-left: 5px; }
+        
+        .courier-status { 
+            margin-top: 8px; 
+            padding: 8px 12px; 
+            background: #f8f9fa; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            border-left: 3px solid var(--info);
+            display: none;
+        }
+        .courier-status.show { display: block; }
+        .courier-status.loading { 
+            background: #fff3cd; 
+            border-left-color: var(--warning);
+            color: #856404;
+        }
+        .courier-status.success { 
+            background: #d4edda; 
+            border-left-color: var(--success);
+            color: #155724;
+        }
+        .courier-status.error { 
+            background: #f8d7da; 
+            border-left-color: var(--danger);
+            color: #721c24;
+        }
+        .courier-status .timestamp { font-size: 11px; color: #666; margin-top: 4px; }
+        
+        .last-check { font-size: 11px; color: #999; margin-top: 4px; }
+        
+        @media (max-width: 900px) { 
+            .admin-panel { grid-template-columns: 1fr; } 
+            .order-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .actions { width: 100%; }
+            .btn-action { flex: 1; justify-content: center; }
+        }
+        
+        .empty-state { text-align: center; padding: 40px; color: #666; font-size: 16px; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 10px; opacity: 0.3; }
+        
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 2000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content { 
+            background: white; 
+            width: 90%; 
+            max-width: 800px; 
+            height: 80vh; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .modal-header { 
+            padding: 15px 20px; 
+            background: var(--dark); 
+            color: white; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .modal-close { 
+            background: none; 
+            border: none; 
+            color: white; 
+            font-size: 24px; 
+            cursor: pointer; 
+            padding: 0; 
+            width: 30px; 
+            height: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .modal-iframe { 
+            flex: 1; 
+            border: none; 
+            width: 100%; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="brand">🏎️ Автозона 33</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-export" onclick="exportToCSV()">📥 Excel</button>
+            <button class="btn-export" onclick="exportJSON()" style="background: var(--primary);">💾 Запази</button>
+            <button class="btn-export" onclick="document.getElementById('importFile').click()" style="background: var(--info);">📂 Зареди</button>
+        </div>
+    </div>
+    <!-- Скрит input за импорт -->
+    <input type="file" id="importFile" style="display: none;" accept=".json" onchange="handleImport(event)">
+    
+    <div class="stats" id="stats">
+        <div class="stat-box">📦 Общо: <span id="totalCount">0</span></div>
+        <div class="stat-box">🚚 Пътуват: <span id="travelCount">0</span></div>
+        <div class="stat-box">✅ Доставени: <span id="doneCount">0</span></div>
+        <div class="stat-box">⚠️ Проблеми: <span id="issueCount">0</span></div>
+    </div>
+    
+    <div class="admin-panel">
+        <input type="text" id="custName" placeholder="Име на клиент *" required>
+        <input type="tel" id="custPhone" placeholder="Телефон (089xxxxxxx)" pattern="[0-9+]*">
+        <input type="text" id="trackNo" placeholder="Товарителница № *" oninput="detect(this.value)" required>
+        <select id="courier">
+            <option value="econt">Еконт</option>
+            <option value="speedy">Спиди</option>
+            <option value="boxnow">BoxNow</option>
+            <option value="sameday">Sameday</option>
+        </select>
+        <button class="btn-add" onclick="addOrder()">ДОБАВИ</button>
+    </div>
+
+    <input type="text" id="search" style="width:100%; margin-bottom:20px; padding:12px; border:2px solid #eee; border-radius:10px;" placeholder="🔍 Търси по име или номер..." onkeyup="render()">
+    <div id="list"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="checkModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span>Проверка на пратка</span>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <iframe id="checkIframe" class="modal-iframe"></iframe>
+    </div>
+</div>
+
+<script>
+    let orders = JSON.parse(localStorage.getItem('autozonaOrders') || '[]');
+
+    function showToast(message, type = '') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast ' + type;
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function detect(val) {
+        const sel = document.getElementById('courier');
+        const v = val.trim().toLowerCase();
+        
+        if (v.length === 14 && (v.startsWith('1o') || v.startsWith('10'))) sel.value = 'sameday';
+        else if (v.length === 13 && /^\d+$/.test(v)) sel.value = 'econt';
+        else if (v.length === 11 && /^\d+$/.test(v)) sel.value = 'speedy';
+        else if (v.length === 10 && /^\d+$/.test(v)) sel.value = 'boxnow';
+    }
+
+    function formatPhone(phone) {
+        if (!phone) return '';
+        let cleaned = phone.replace(/[^\d+]/g, '');
+        if (cleaned.startsWith('359') && !cleaned.startsWith('+')) {
+            cleaned = '+' + cleaned;
+        }
+        return cleaned;
+    }
+
+    function addOrder() {
+        const name = document.getElementById('custName').value.trim();
+        const phone = formatPhone(document.getElementById('custPhone').value);
+        const num = document.getElementById('trackNo').value.trim();
+        const courier = document.getElementById('courier').value;
+        
+        if (!name || !num) {
+            showToast('Моля попълнете име и номер на товарителница!', 'error');
+            return;
+        }
+        
+        const existing = orders.find(o => o.num === num && o.courier === courier);
+        if (existing) {
+            showToast('Тази товарителница вече съществува!', 'error');
+            return;
+        }
+        
+        orders.unshift({ 
+            id: Date.now(), 
+            name, 
+            phone, 
+            num, 
+            courier, 
+            status: 'travel', 
+            date: new Date().toLocaleString('bg-BG'),
+            createdAt: Date.now(),
+            lastCheck: null,
+            courierStatus: null
+        });
+        
+        save(); 
+        render();
+        showToast('Пратката е добавена успешно!', 'success');
+        
+        ['custName', 'custPhone', 'trackNo'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('custName').focus();
+    }
+
+    function getTrackUrl(o) {
+        if (o.courier === 'econt') return `https://www.econt.com/services/track-shipment/${o.num}`;
+        if (o.courier === 'speedy') return `https://www.speedy.bg/public/index.php/bg/track-shipment`;
+        if (o.courier === 'boxnow') return `https://www.boxnow.bg/?track=${o.num}`;
+        if (o.courier === 'sameday') return `https://sameday.bg/#awb=${o.num}`;
+        return "";
+    }
+
+    async function checkCourierStatus(id) {
+        const o = orders.find(x => x.id === id);
+        const statusDiv = document.getElementById(`courier-status-${id}`);
+        const btn = document.getElementById(`check-btn-${id}`);
+        
+        // Специално третиране за Спиди - копиране на номера и отваряне в нов таб
+        if (o.courier === 'speedy') {
+            copyToClipboard(o.num, false);
+            window.open(getTrackUrl(o), '_blank');
+            showToast('📋 Номерът е копиран! Пейстнете го в сайта на Спиди', 'success');
+            o.lastCheck = new Date().toLocaleString('bg-BG');
+            save();
+            render();
+            return;
+        }
+        
+        statusDiv.className = 'courier-status loading show';
+        statusDiv.innerHTML = '⏳ Проверка на статуса...';
+        btn.disabled = true;
+        
+        try {
+            openCheckModal(o);
+            statusDiv.className = 'courier-status show';
+            statusDiv.innerHTML = `📋 <a href="${getTrackUrl(o)}" target="_blank" style="color: var(--info); text-decoration: underline;">Отвори в нов прозорец</a>`;
+        } catch (error) {
+            statusDiv.className = 'courier-status error show';
+            statusDiv.innerHTML = `❌ Грешка при проверката: ${error.message}`;
+        } finally {
+            btn.disabled = false;
+            o.lastCheck = new Date().toLocaleString('bg-BG');
+            save();
+            render();
+        }
+    }
+
+    function openCheckModal(order) {
+        const modal = document.getElementById('checkModal');
+        const iframe = document.getElementById('checkIframe');
+        const url = getTrackUrl(order);
+        
+        iframe.src = url;
+        modal.classList.add('show');
+        
+        order.lastCheck = new Date().toLocaleString('bg-BG');
+        save();
+    }
+
+    function closeModal(event) {
+        if (!event || event.target.id === 'checkModal' || event.target.classList.contains('modal-close')) {
+            const modal = document.getElementById('checkModal');
+            const iframe = document.getElementById('checkIframe');
+            modal.classList.remove('show');
+            iframe.src = '';
+        }
+    }
+
+    function getViberText(o) {
+        const url = getTrackUrl(o);
+        const hour = new Date().getHours();
+        const greet = hour < 11 ? "Добро утро" : (hour < 18 ? "Добър ден" : "Добър вечер");
+        
+        return `✨ ${greet}, ${o.name}!\n\nВашата поръчка от Автозона 33 е изпратена чрез ${o.courier.toUpperCase()}.\n\n📦 Товарителница №: ${o.num}\n\nЛинк за проследяване:\n${url}\n\nБлагодарим Ви за доверието! 🏎️`;
+    }
+
+    function sendViber(id) {
+        const o = orders.find(x => x.id === id);
+        const text = getViberText(o);
+        const viberUrl = `viber://forward?text=${encodeURIComponent(text)}`;
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            window.location.href = viberUrl;
+            copyToClipboard(text, false);
+            showToast('Отваряне на Viber... Текстът е копиран', 'success');
+        } else {
+            copyToClipboard(text, true);
+            showToast('Viber работи само на мобилни устройства. Текстът е копиран!', 'success');
+        }
+    }
+
+    function copyViberText(id) {
+        const o = orders.find(x => x.id === id);
+        const text = getViberText(o);
+        copyToClipboard(text, true);
+    }
+
+    function copyToClipboard(text, showNotification = true) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                if (showNotification) showToast('Копирано в клипборда!', 'success');
+            });
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                if (showNotification) showToast('Копирано в клипборда!', 'success');
+            } catch (err) {
+                if (showNotification) showToast('Грешка при копиране', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function copyTrackingNumber(num) {
+        copyToClipboard(num, true);
+    }
+
+    function sendEmail(id) {
+        const o = orders.find(x => x.id === id);
+        const url = getTrackUrl(o);
+        const body = `Здравейте, ${o.name}!\n\nПратката Ви от Автозона 33 пътува с ${o.courier.toUpperCase()}.\nНомер: ${o.num}\nПроследяване: ${url}`;
+        window.location.href = `mailto:?subject=Пратка от Автозона 33&body=${encodeURIComponent(body)}`;
+    }
+
+    function changeStatus(id) {
+        const o = orders.find(x => x.id === id);
+        const next = { 'travel': 'done', 'done': 'issue', 'issue': 'travel' };
+        o.status = next[o.status];
+        save(); 
+        render();
+        showToast('Статусът е обновен!', 'success');
+    }
+
+    function exportToCSV() {
+        let csv = "Дата,Клиент,Телефон,Куриер,Номер,Статус,Последна проверка\n";
+        orders.forEach(o => {
+            const statusText = { 'travel': 'Пътува', 'done': 'Доставена', 'issue': 'Проблем' }[o.status];
+            csv += `${o.date},${o.name},${o.phone},${o.courier},${o.num},${statusText},${o.lastCheck || 'Няма'}\n`;
+        });
+        const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Avtozona33_Report_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        showToast('Файлът е изтеглен!', 'success');
+    }
+
+    // 💾 ЕКСПОРТ на всички поръчки като JSON файл
+    function exportJSON() {
+        if (orders.length === 0) {
+            showToast('Няма поръчки за експорт!', 'error');
+            return;
+        }
+        
+        const data = {
+            app: 'Avtozona33',
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            orders: orders
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Avtozona33_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast(`✅ Експортирани ${orders.length} поръчки!`, 'success');
+    }
+
+    // 📂 ИМПОРТ - обработка на файла
+    function handleImport(event) {
+        const file = event.target.files[0];
+        
+        if (!file) {
+            showToast('❌ Не е избран файл!', 'error');
+            return;
+        }
+        
+        if (!file.name.endsWith('.json')) {
+            showToast('❌ Моля, изберете JSON файл!', 'error');
+            event.target.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                if (!data.orders || !Array.isArray(data.orders)) {
+                    throw new Error('Невалиден формат на файла!');
+                }
+                
+                if (orders.length > 0) {
+                    const confirmMsg = `Имате ${orders.length} текущи поръчки.\n\nФайлът съдържа ${data.orders.length} поръчки.\n\nНатиснете OK за ОБЕДИНЯВАНЕ\nили Cancel за ОТМЯНА.`;
+                    
+                    if (!confirm(confirmMsg)) {
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    const existingIds = new Set(orders.map(o => o.id));
+                    const newOrders = data.orders.filter(o => !existingIds.has(o.id));
+                    orders = [...orders, ...newOrders];
+                    showToast(`✅ Добавени ${newOrders.length} нови поръчки! Общо: ${orders.length}`, 'success');
+                } else {
+                    orders = data.orders;
+                    showToast(`✅ Заредени ${orders.length} поръчки!`, 'success');
+                }
+                
+                save();
+                render();
+                
+            } catch (error) {
+                showToast('❌ Грешка: ' + error.message, 'error');
+            }
+            
+            event.target.value = '';
+        };
+        
+        reader.onerror = function() {
+            showToast('❌ Грешка при четене на файла!', 'error');
+            event.target.value = '';
+        };
+        
+        reader.readAsText(file);
+    }
+
+    function deleteOrder(id) { 
+        if(confirm("Сигурни ли сте, че искате да изтриете тази поръчка?")) { 
+            orders = orders.filter(o => o.id !== id); 
+            save(); 
+            render(); 
+            showToast('Поръчката е изтрита!', 'success');
+        } 
+    }
+    
+    function save() { 
+        localStorage.setItem('autozonaOrders', JSON.stringify(orders)); 
+    }
+
+    function updateStats() {
+        document.getElementById('totalCount').textContent = orders.length;
+        document.getElementById('travelCount').textContent = orders.filter(o => o.status === 'travel').length;
+        document.getElementById('doneCount').textContent = orders.filter(o => o.status === 'done').length;
+        document.getElementById('issueCount').textContent = orders.filter(o => o.status === 'issue').length;
+    }
+
+    function render() {
+        const list = document.getElementById('list');
+        const search = document.getElementById('search').value.toLowerCase();
+        const filtered = orders.filter(o => 
+            o.name.toLowerCase().includes(search) || 
+            o.num.toLowerCase().includes(search) ||
+            (o.phone && o.phone.includes(search))
+        );
+        
+        updateStats();
+        
+        if (filtered.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <div>Няма намерени пратки</div>
+                    <div style="font-size: 14px; margin-top: 10px; opacity: 0.7;">Добавете нова пратка или променете критериите за търсене</div>
+                </div>`;
+            return;
+        }
+        
+        list.innerHTML = "";
+        filtered.forEach(o => {
+            const statusConfig = {
+                travel: { label: '🚚 Пътува', class: 'btn-status-travel' },
+                done: { label: '✅ Доставена', class: 'btn-status-done' },
+                issue: { label: '⚠️ Проблем', class: 'btn-status-issue' }
+            };
+            const statusInfo = statusConfig[o.status];
+            
+            const lastCheckHtml = o.lastCheck ? `<div class="last-check">🕐 Последна проверка: ${o.lastCheck}</div>` : '';
+            
+            let courierStatusHtml = '';
+            if (o.courierStatus) {
+                courierStatusHtml = `
+                    <div class="courier-status success show">
+                        <strong>📦 Последен статус:</strong><br>
+                        ${o.courierStatus.description}<br>
+                        <div class="timestamp">🕐 ${new Date(o.courierStatus.timestamp).toLocaleString('bg-BG')}</div>
+                    </div>
+                `;
+            } else {
+                courierStatusHtml = `<div id="courier-status-${o.id}" class="courier-status"></div>`;
+            }
+            
+            const card = document.createElement('div');
+            card.className = `order-card status-${o.status}`;
+            card.innerHTML = `
+                <div class="order-info">
+                    <strong>${escapeHtml(o.name)}</strong>
+                    <span>📞 ${o.phone || '---'} | 📅 ${o.date}</span>
+                    <span class="copy-badge" onclick="copyTrackingNumber('${o.num}')">${o.courier.toUpperCase()}: ${o.num} 📋</span>
+                    ${lastCheckHtml}
+                    ${courierStatusHtml}
+                </div>
+                <div class="actions">
+                    <button class="btn-action ${statusInfo.class}" onclick="changeStatus(${o.id})">${statusInfo.label}</button>
+                    <button id="check-btn-${o.id}" class="btn-action btn-check" onclick="checkCourierStatus(${o.id})" title="Провери в сайта на куриера">🔍 Провери</button>
+                    <button class="btn-action" style="background:var(--viber)" onclick="sendViber(${o.id})">💜 Viber</button>
+                    <button class="btn-action btn-copy-text" onclick="copyViberText(${o.id})" title="Копирай Viber текст">📋 Текст</button>
+                    <button class="btn-action" style="background:var(--email)" onclick="sendEmail(${o.id})">✉️ Email</button>
+                    <button class="btn-action" style="background:var(--dark)" onclick="deleteOrder(${o.id})" title="Изтрий">🗑️</button>
+                </div>`;
+            list.appendChild(card);
+        });
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    render();
+    
+    document.querySelectorAll('.admin-panel input').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addOrder();
+        });
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+</script>
+</body>
+</html>
